@@ -62,7 +62,7 @@ export function Navbar() {
               className="bg-gray-900 hover:bg-gray-800 text-white font-medium px-6"
               asChild
             >
-              <Link href="/inscription">S&apos;inscrire</Link>
+              <Link href="/registration">S&apos;inscrire</Link>
             </Button>
           </div>
 
@@ -124,7 +124,7 @@ export function Navbar() {
                   Se connecter
                 </Link>
                 <Link
-                  href="/inscription"
+                  href="/registration"
                   className="block px-3 py-2 rounded-md text-base font-medium bg-gray-900 text-white hover:bg-gray-800"
                   onClick={() => setMobileMenuOpen(false)}
                 >

@@ -128,7 +128,7 @@ export default function ConnexionPage() {
                 <p className="text-sm text-gray-600">
                   Pas encore de compte ?{" "}
                   <Link
-                    href="/inscription"
+                    href="/registration"
                     className="text-indigo-700 hover:underline font-medium"
                   >
                     S&apos;inscrire
