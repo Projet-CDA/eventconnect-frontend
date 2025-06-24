@@ -131,7 +131,7 @@ export default function ConnexionPage() {
                   href="/inscription"
                   className="text-blue-600 hover:text-blue-800 font-medium"
                 >
-                  S'inscrire
+                  S&apos;inscrire
                 </Link>
               </p>
             </div>
