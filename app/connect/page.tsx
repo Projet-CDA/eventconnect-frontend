@@ -9,6 +9,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { Mail, Lock, Eye, EyeOff } from "lucide-react";
 import { toast } from "sonner";
+import { loginUser } from "../../api/login";
 
 export default function ConnexionPage() {
   const [email, setEmail] = useState("");
@@ -16,19 +17,75 @@ export default function ConnexionPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  // Pour l'affichage optionnel d'un message de déconnexion
+  const [logoutMsg, setLogoutMsg] = useState("");
+
+  interface LoginRequest {
+    email: string;
+    mot_de_passe: string;
+  }
+
+  interface LoginResponse {
+    token?: string;
+    utilisateur?: {
+      id?: number;
+      [key: string]: any;
+    };
+    message?: string;
+  }
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
 
     try {
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-      toast.success("Connexion réussie !");
-      window.location.href = "/";
+      const data: LoginResponse = await loginUser({
+        email: email,
+        mot_de_passe: password,
+      } as LoginRequest);
+
+      console.log("Login API response:", data);
+
+      if (data.token) {
+        localStorage.setItem("token", data.token);
+
+        if (data.utilisateur && typeof data.utilisateur === "object") {
+          localStorage.setItem("user", JSON.stringify(data.utilisateur));
+          localStorage.setItem(
+            "userId",
+            data.utilisateur?.id?.toString() || ""
+          );
+        } else {
+          // Si pas d'user ou undefined : clean localStorage pour éviter "undefined"
+          localStorage.removeItem("user");
+          localStorage.removeItem("userId");
+        }
+
+        toast.success("Connexion réussie !");
+        window.location.href = "/";
+      } else {
+        // Propre : clean aussi ici
+        localStorage.removeItem("user");
+        localStorage.removeItem("userId");
+        toast.error(data.message || "Erreur de connexion");
+      }
     } catch (error) {
+      localStorage.removeItem("user");
+      localStorage.removeItem("userId");
       toast.error("Erreur de connexion");
     } finally {
       setLoading(false);
     }
+  };
+
+  // Déconnexion
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+    localStorage.removeItem("userId");
+    setLogoutMsg("Déconnexion réussie !");
+    toast.success("Déconnexion réussie !");
+    window.location.href = "/connect";
   };
 
   return (
@@ -124,6 +181,22 @@ export default function ConnexionPage() {
                   )}
                 </Button>
               </form>
+
+              {/* BOUTON DÉCONNEXION */}
+              <div className="mt-6 text-center">
+                <Button
+                  type="button"
+                  variant="secondary"
+                  className="w-full"
+                  onClick={handleLogout}
+                >
+                  Se déconnecter
+                </Button>
+                {logoutMsg && (
+                  <div className="mt-2 text-green-600">{logoutMsg}</div>
+                )}
+              </div>
+
               <div className="mt-6 text-center">
                 <p className="text-sm text-gray-600">
                   Pas encore de compte ?{" "}

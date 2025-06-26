@@ -9,13 +9,14 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { Mail, Lock, Eye, EyeOff, User, Phone } from "lucide-react";
 import { toast } from "sonner";
+import { registerUser } from "../../api/register";
 
 export default function InscriptionPage() {
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
     email: "",
-    phone: "",
+    // phone: "",
     password: "",
     confirmPassword: "",
   });
@@ -47,9 +48,21 @@ export default function InscriptionPage() {
     }
 
     try {
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-      toast.success("Inscription réussie !");
-      window.location.href = "/connexion";
+      // Appel à l'API via ton helper, en mappant bien les champs :
+      const data = await registerUser({
+        nom: formData.lastName,
+        prenom: formData.firstName,
+        email: formData.email,
+        mot_de_passe: formData.password,
+        // phone: formData.phone, // si tu veux gérer le tel
+      });
+
+      if (data && data.utilisateur) {
+        toast.success("Inscription réussie !");
+        window.location.href = "/connect";
+      } else {
+        toast.error(data.message || "Erreur lors de l'inscription");
+      }
     } catch (error) {
       toast.error("Erreur lors de l'inscription");
     } finally {
@@ -138,7 +151,8 @@ export default function InscriptionPage() {
                   />
                 </div>
               </div>
-              <div>
+              {/* Pour l'instant pas de tel en bdd */}
+              {/* <div>
                 <Label htmlFor="phone">Téléphone (optionnel)</Label>
                 <div className="relative mt-1">
                   <Phone className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 h-4 w-4" />
@@ -152,7 +166,7 @@ export default function InscriptionPage() {
                     className="pl-10"
                   />
                 </div>
-              </div>
+              </div> */}
               <div>
                 <Label htmlFor="password">Mot de passe</Label>
                 <div className="relative mt-1">
