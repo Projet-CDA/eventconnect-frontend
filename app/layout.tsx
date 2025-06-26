@@ -3,14 +3,14 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
-import { Toaster } from "@/components/ui/sonner";
+import { ThemeProvider } from "@/components/ThemeProvider";
 
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "EventConnect - Plateforme collaborative d'événements",
+  title: "EventConnect - Plateforme de gestion d'événements collaboratifs",
   description:
-    "Créez, organisez et participez aux événements qui vous passionnent. La plateforme collaborative pour connecter les communautés.",
+    "Créez, organisez et participez à des événements collaboratifs avec EventConnect",
 };
 
 export default function RootLayout({
@@ -19,14 +19,17 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="fr">
-      <body className={inter.className}>
-        <div className="min-h-screen flex flex-col">
-          <Navbar />
-          <main className="flex-1">{children}</main>
-          <Footer />
-        </div>
-        <Toaster />
+    <html lang="fr" suppressHydrationWarning>
+      <body
+        className={`${inter.className} bg-gray-50 dark:bg-gray-900 transition-colors duration-300`}
+      >
+        <ThemeProvider>
+          <div className="min-h-screen flex flex-col">
+            <Navbar />
+            <main className="flex-1">{children}</main>
+            <Footer />
+          </div>
+        </ThemeProvider>
       </body>
     </html>
   );
