@@ -3,63 +3,72 @@
 import { useState } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { Menu, X } from "lucide-react";
+import { Menu, X, Calendar, Users, MapPin } from "lucide-react";
 
 export function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   return (
-    <nav className="bg-white border-b border-gray-100 sticky top-0 z-50">
+    <nav className="bg-gradient-to-r from-blue-600 via-purple-600 to-blue-800 shadow-lg sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-16">
-          {/* Logo */}
+        <div className="flex justify-between items-center h-20">
+          {/* Logo avec icône */}
           <div className="flex items-center">
-            <Link href="/" className="flex items-center space-x-2">
-              <span className="text-2xl font-bold text-blue-600">
-                EventConnect
-              </span>
+            <Link href="/" className="flex items-center space-x-3 group">
+              <div className="bg-white/20 backdrop-blur-sm rounded-xl p-2 group-hover:bg-white/30 transition-all duration-300">
+                <Calendar className="h-8 w-8 text-white" />
+              </div>
+              <div className="flex flex-col">
+                <span className="text-2xl font-bold text-white tracking-tight">
+                  EventConnect
+                </span>
+                <span className="text-xs text-blue-100 font-medium">
+                  Connectez-vous aux événements
+                </span>
+              </div>
             </Link>
           </div>
 
           {/* Navigation principale - Desktop */}
-          <div className="hidden md:flex items-center space-x-8">
+          <div className="hidden lg:flex items-center space-x-1">
             <Link
               href="/"
-              className="text-gray-700 hover:text-blue-600 font-medium transition-colors"
+              className="flex items-center space-x-2 px-4 py-2 rounded-lg text-white/90 hover:text-white hover:bg-white/10 transition-all duration-200 font-medium"
             >
-              Accueil
+              <span>Accueil</span>
             </Link>
             <Link
               href="/events"
-              className="text-gray-700 hover:text-blue-600 font-medium transition-colors"
+              className="flex items-center space-x-2 px-4 py-2 rounded-lg text-white/90 hover:text-white hover:bg-white/10 transition-all duration-200 font-medium"
             >
-              Événements
+              <MapPin className="h-4 w-4" />
+              <span>Événements</span>
             </Link>
             <Link
               href="/comment-ca-marche"
-              className="text-gray-700 hover:text-blue-600 font-medium transition-colors"
+              className="flex items-center space-x-2 px-4 py-2 rounded-lg text-white/90 hover:text-white hover:bg-white/10 transition-all duration-200 font-medium"
             >
-              Comment ça marche
+              <span>Comment ça marche</span>
             </Link>
             <Link
               href="/a-features"
-              className="text-gray-700 hover:text-blue-600 font-medium transition-colors"
+              className="flex items-center space-x-2 px-4 py-2 rounded-lg text-white/90 hover:text-white hover:bg-white/10 transition-all duration-200 font-medium"
             >
-              À propos
+              <span>À propos</span>
             </Link>
           </div>
 
           {/* Actions utilisateur - Desktop */}
-          <div className="hidden md:flex items-center space-x-4">
+          <div className="hidden lg:flex items-center space-x-3">
             <Button
               variant="ghost"
-              className="text-gray-700 hover:text-blue-600 font-medium"
+              className="text-white/90 hover:text-white hover:bg-white/10 font-medium px-6 py-2 rounded-lg transition-all duration-200"
               asChild
             >
               <Link href="/connect">Se connecter</Link>
             </Button>
             <Button
-              className="bg-gray-900 hover:bg-gray-800 text-white font-medium px-6"
+              className="bg-white text-blue-600 hover:bg-gray-100 font-semibold px-6 py-2 rounded-lg shadow-lg hover:shadow-xl transition-all duration-200"
               asChild
             >
               <Link href="/registration">S&apos;inscrire</Link>
@@ -67,10 +76,11 @@ export function Navbar() {
           </div>
 
           {/* Menu mobile toggle */}
-          <div className="md:hidden">
+          <div className="lg:hidden">
             <Button
               variant="ghost"
               size="icon"
+              className="text-white hover:bg-white/10"
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             >
               {mobileMenuOpen ? (
@@ -82,58 +92,63 @@ export function Navbar() {
           </div>
         </div>
 
-        {/* Menu mobile */}
-        {mobileMenuOpen && (
-          <div className="md:hidden border-t border-gray-100">
-            <div className="px-2 pt-2 pb-3 space-y-1">
-              <Link
-                href="/"
-                className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-blue-600 hover:bg-gray-50"
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                Accueil
-              </Link>
-              <Link
-                href="/events"
-                className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-blue-600 hover:bg-gray-50"
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                Événements
-              </Link>
-              <Link
-                href="/comment-ca-marche"
-                className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-blue-600 hover:bg-gray-50"
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                Comment ça marche
-              </Link>
-              <Link
-                href="/a-features"
-                className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-blue-600 hover:bg-gray-50"
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                À propos
-              </Link>
+        {/* Menu mobile avec animation */}
+        <div
+          className={`lg:hidden transition-all duration-300 ease-in-out ${
+            mobileMenuOpen
+              ? "max-h-96 opacity-100"
+              : "max-h-0 opacity-0 overflow-hidden"
+          }`}
+        >
+          <div className="px-2 pt-2 pb-6 space-y-2 bg-white/10 backdrop-blur-sm rounded-xl mt-4">
+            <Link
+              href="/"
+              className="flex items-center space-x-3 px-4 py-3 rounded-lg text-white hover:bg-white/20 transition-all duration-200"
+              onClick={() => setMobileMenuOpen(false)}
+            >
+              <span className="font-medium">Accueil</span>
+            </Link>
+            <Link
+              href="/events"
+              className="flex items-center space-x-3 px-4 py-3 rounded-lg text-white hover:bg-white/20 transition-all duration-200"
+              onClick={() => setMobileMenuOpen(false)}
+            >
+              <MapPin className="h-5 w-5" />
+              <span className="font-medium">Événements</span>
+            </Link>
+            <Link
+              href="/comment-ca-marche"
+              className="flex items-center space-x-3 px-4 py-3 rounded-lg text-white hover:bg-white/20 transition-all duration-200"
+              onClick={() => setMobileMenuOpen(false)}
+            >
+              <span className="font-medium">Comment ça marche</span>
+            </Link>
+            <Link
+              href="/a-features"
+              className="flex items-center space-x-3 px-4 py-3 rounded-lg text-white hover:bg-white/20 transition-all duration-200"
+              onClick={() => setMobileMenuOpen(false)}
+            >
+              <span className="font-medium">À propos</span>
+            </Link>
 
-              <div className="border-t border-gray-200 pt-4 pb-3 space-y-1">
-                <Link
-                  href="/connect"
-                  className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-blue-600 hover:bg-gray-50"
-                  onClick={() => setMobileMenuOpen(false)}
-                >
-                  Se connecter
-                </Link>
-                <Link
-                  href="/registration"
-                  className="block px-3 py-2 rounded-md text-base font-medium bg-gray-900 text-white hover:bg-gray-800"
-                  onClick={() => setMobileMenuOpen(false)}
-                >
-                  S&apos;inscrire
-                </Link>
-              </div>
+            <div className="border-t border-white/20 pt-4 space-y-2">
+              <Link
+                href="/connect"
+                className="flex items-center justify-center px-4 py-3 rounded-lg text-white hover:bg-white/20 transition-all duration-200 font-medium"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                Se connecter
+              </Link>
+              <Link
+                href="/registration"
+                className="flex items-center justify-center px-4 py-3 rounded-lg bg-white text-blue-600 hover:bg-gray-100 font-semibold transition-all duration-200"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                S&apos;inscrire
+              </Link>
             </div>
           </div>
-        )}
+        </div>
       </div>
     </nav>
   );
