@@ -530,8 +530,7 @@ export default function Home() {
               </Button>
               <Button
                 size="lg"
-                variant="outline"
-                className="border-primary-foreground text-primary-foreground hover:bg-primary-foreground hover:text-primary px-8 py-4 text-lg hover-lift"
+                className="bg-background text-primary hover:bg-background/90 px-8 py-4 text-lg hover-glow"
                 asChild
               >
                 <Link href="/events">Découvrir les événements</Link>
