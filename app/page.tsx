@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -20,6 +21,9 @@ import {
   Music,
   Dumbbell,
   Quote,
+  Star,
+  Zap,
+  Globe,
 } from "lucide-react";
 
 export default function Home() {
@@ -77,18 +81,21 @@ export default function Home() {
       title: "Créez des événements",
       description:
         "Créez et personnalisez vos événements en quelques clics. Ajoutez des descriptions, des images, des dates et bien d'autres.",
+      gradient: "from-blue-500 to-cyan-500",
     },
     {
       icon: Users,
       title: "Collaborez en équipe",
       description:
         "Invitez des co-organisateurs pour gérer vos événements ensemble. Partagez les responsabilités et collaborez efficacement.",
+      gradient: "from-purple-500 to-pink-500",
     },
     {
       icon: MessageSquare,
       title: "Communiquez facilement",
       description:
         "Échangez avec les participants grâce au système de messagerie intégré. Envoyez des notifications et restez tout le monde informé.",
+      gradient: "from-green-500 to-emerald-500",
     },
   ];
 
@@ -97,37 +104,37 @@ export default function Home() {
       name: "Technologie",
       count: 24,
       icon: Code,
-      color: "bg-blue-100 text-blue-700",
+      color: "from-blue-500 to-blue-600",
     },
     {
       name: "Art & Culture",
       count: 18,
       icon: Palette,
-      color: "bg-purple-100 text-purple-700",
+      color: "from-purple-500 to-purple-600",
     },
     {
       name: "Santé & Bien-être",
       count: 15,
       icon: Heart,
-      color: "bg-green-100 text-green-700",
+      color: "from-green-500 to-green-600",
     },
     {
       name: "Business & Entrepreneuriat",
       count: 32,
       icon: Briefcase,
-      color: "bg-orange-100 text-orange-700",
+      color: "from-orange-500 to-orange-600",
     },
     {
       name: "Musique & Divertissement",
       count: 21,
       icon: Music,
-      color: "bg-pink-100 text-pink-700",
+      color: "from-pink-500 to-pink-600",
     },
     {
       name: "Sports & Fitness",
       count: 19,
       icon: Dumbbell,
-      color: "bg-red-100 text-red-700",
+      color: "from-red-500 to-red-600",
     },
   ];
 
@@ -139,6 +146,7 @@ export default function Home() {
       author: "Marie Dubois",
       role: "Organisatrice d'événements, TechHub",
       avatar: "MD",
+      rating: 5,
     },
     {
       id: 2,
@@ -147,6 +155,7 @@ export default function Home() {
       author: "Jean-Michel Martin",
       role: "Directeur marketing, StartupLab",
       avatar: "JM",
+      rating: 5,
     },
     {
       id: 3,
@@ -155,75 +164,114 @@ export default function Home() {
       author: "Sophie Lefort",
       role: "Responsable communication, InnovateNow",
       avatar: "SL",
+      rating: 5,
     },
+  ];
+
+  const stats = [
+    { label: "Événements créés", value: "1,000+", icon: Calendar },
+    { label: "Utilisateurs actifs", value: "5,000+", icon: Users },
+    { label: "Villes couvertes", value: "50+", icon: Globe },
+    { label: "Satisfaction", value: "98%", icon: Star },
   ];
 
   return (
     <div className="min-h-screen">
       {/* Hero Section */}
-      <section className="relative bg-gradient-to-br from-blue-50 via-white to-violet-50 py-20 overflow-hidden">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center max-w-4xl mx-auto">
+      <section className="relative bg-gradient-to-br from-background via-background to-muted/30 py-20 overflow-hidden">
+        <div className="absolute inset-0 bg-grid-pattern opacity-5"></div>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
+          <div className="text-center max-w-4xl mx-auto animate-fade-in">
             <div className="mb-6">
               <Badge
                 variant="outline"
-                className="bg-blue-50 text-blue-700 border-blue-200 px-4 py-2"
+                className="bg-primary/10 text-primary border-primary/20 px-4 py-2 hover-glow"
               >
+                <Sparkles className="h-4 w-4 mr-2" />
                 Rejoignez des milliers d&apos;organisateurs ✨ Gratuit
               </Badge>
             </div>
 
-            <h1 className="text-4xl md:text-6xl font-bold text-gray-900 mb-6 leading-tight">
+            <h1 className="text-responsive-3xl font-bold text-foreground mb-6 leading-tight">
               Créez et participez à des événements
-              <span className="block text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-violet-600">
+              <span className="block text-transparent bg-clip-text bg-gradient-to-r from-primary to-primary/80">
                 extraordinaires
               </span>
             </h1>
 
-            <p className="text-xl text-gray-600 mb-8 max-w-2xl mx-auto leading-relaxed">
+            <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto leading-relaxed">
               EventConnect vous permet de créer, organiser et participer à des
               événements de toutes sortes, en toute simplicité.
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <>
-                <Button
-                  size="lg"
-                  className="bg-gray-900 hover:bg-gray-800 text-white px-8 py-4 text-lg"
-                  asChild
-                >
-                  <Link href="/events">
-                    Découvrir les événements
-                    <ArrowRight className="ml-2 h-5 w-5" />
-                  </Link>
-                </Button>
-                <Button
-                  size="lg"
-                  variant="outline"
-                  className="border-gray-300 text-gray-700 hover:bg-gray-50 px-8 py-4 text-lg"
-                  asChild
-                >
-                  <Link href="/inscription">Créer un compte</Link>
-                </Button>
-              </>
+              <Button
+                size="lg"
+                className="bg-primary hover:bg-primary/90 text-primary-foreground px-8 py-4 text-lg hover-glow"
+                asChild
+              >
+                <Link href="/registration">
+                  Commencer gratuitement
+                  <ArrowRight className="ml-2 h-5 w-5" />
+                </Link>
+              </Button>
+              <Button
+                size="lg"
+                variant="outline"
+                className="border-border text-foreground hover:bg-accent px-8 py-4 text-lg hover-lift"
+                asChild
+              >
+                <Link href="/events">Découvrir les événements</Link>
+              </Button>
             </div>
           </div>
         </div>
       </section>
 
+      {/* Stats Section */}
+      <section className="py-16 bg-card border-y border-border">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+            {stats.map((stat, index) => (
+              <div
+                key={index}
+                className="text-center animate-fade-in"
+                style={{ animationDelay: `${index * 0.1}s` }}
+              >
+                <div className="flex justify-center mb-3">
+                  <div className="p-3 bg-primary/10 rounded-2xl">
+                    <stat.icon className="h-6 w-6 text-primary" />
+                  </div>
+                </div>
+                <div className="text-2xl md:text-3xl font-bold text-foreground mb-1">
+                  {stat.value}
+                </div>
+                <div className="text-sm text-muted-foreground">
+                  {stat.label}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* Featured Events Section */}
-      <section className="py-20 bg-white">
+      <section className="py-20 bg-background">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center mb-12">
-            <div>
-              <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+            <div className="animate-slide-up">
+              <h2 className="text-responsive-2xl font-bold text-foreground mb-4">
                 Événements à la une
               </h2>
-              <p className="text-xl text-gray-600">
+              <p className="text-xl text-muted-foreground">
                 Découvrez les événements les plus populaires de notre plateforme
               </p>
             </div>
-            <Button variant="outline" asChild className="hidden md:flex">
+            <Button
+              variant="outline"
+              asChild
+              className="hidden md:flex hover-lift"
+            >
               <Link href="/events">
                 Voir tous les événements
                 <ArrowRight className="ml-2 h-4 w-4" />
@@ -232,70 +280,80 @@ export default function Home() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {featuredEvents.map((event) => (
+            {featuredEvents.map((event, index) => (
               <Card
                 key={event.id}
-                className="overflow-hidden hover:shadow-xl transition-all duration-300 group cursor-pointer border-0 shadow-lg"
+                className="overflow-hidden hover-lift border-0 shadow-lg bg-card animate-slide-up"
+                style={{ animationDelay: `${index * 0.1}s` }}
               >
                 <div className="aspect-[4/3] relative overflow-hidden">
                   <img
                     src={event.image}
                     alt={event.title}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                    className="w-full h-full object-cover transition-transform duration-500 hover:scale-110"
                   />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
                   <div className="absolute top-4 left-4">
-                    <Badge className="bg-white/90 text-gray-900 hover:bg-white">
+                    <Badge className="bg-background/90 text-foreground hover:bg-background">
                       {event.category}
                     </Badge>
                   </div>
                   <div className="absolute top-4 right-4">
                     <Badge
                       variant="outline"
-                      className="bg-white/90 text-gray-900 border-gray-200"
+                      className="bg-background/90 text-foreground border-border"
                     >
                       {event.price}
                     </Badge>
                   </div>
+                  <div className="absolute bottom-4 left-4 right-4">
+                    <div className="text-white">
+                      <div className="flex items-center text-sm mb-1">
+                        <Calendar className="h-4 w-4 mr-2" />
+                        {new Date(event.date).toLocaleDateString("fr-FR", {
+                          weekday: "long",
+                          day: "numeric",
+                          month: "long",
+                        })}
+                      </div>
+                      <div className="flex items-center text-sm">
+                        <Clock className="h-4 w-4 mr-2" />
+                        {event.time}
+                      </div>
+                    </div>
+                  </div>
                 </div>
 
                 <CardContent className="p-6">
-                  <h3 className="text-xl font-bold text-gray-900 mb-3 line-clamp-2">
+                  <h3 className="text-xl font-bold text-foreground mb-3 line-clamp-2">
                     {event.title}
                   </h3>
-                  <p className="text-gray-600 mb-4 line-clamp-2 leading-relaxed">
+                  <p className="text-muted-foreground mb-4 line-clamp-2 leading-relaxed">
                     {event.description}
                   </p>
 
-                  <div className="space-y-2 text-sm text-gray-500 mb-4">
+                  <div className="space-y-2 text-sm text-muted-foreground mb-4">
                     <div className="flex items-center">
-                      <Calendar className="h-4 w-4 mr-3 text-blue-500" />
-                      {new Date(event.date).toLocaleDateString("fr-FR", {
-                        weekday: "long",
-                        day: "numeric",
-                        month: "long",
-                      })}
-                    </div>
-                    <div className="flex items-center">
-                      <Clock className="h-4 w-4 mr-3 text-blue-500" />
-                      {event.time}
-                    </div>
-                    <div className="flex items-center">
-                      <MapPin className="h-4 w-4 mr-3 text-blue-500" />
+                      <MapPin className="h-4 w-4 mr-3 text-primary" />
                       {event.location}
                     </div>
                     <div className="flex items-center">
-                      <Users className="h-4 w-4 mr-3 text-blue-500" />
+                      <Users className="h-4 w-4 mr-3 text-primary" />
                       {event.participants} participants /{" "}
                       {event.maxParticipants}
                     </div>
                   </div>
+
+                  <Button className="w-full hover-glow" asChild>
+                    <Link href={`/events/${event.id}`}>Voir les détails</Link>
+                  </Button>
                 </CardContent>
               </Card>
             ))}
           </div>
 
           <div className="text-center mt-12 md:hidden">
-            <Button variant="outline" asChild>
+            <Button variant="outline" asChild className="hover-lift">
               <Link href="/events">
                 Voir tous les événements
                 <ArrowRight className="ml-2 h-4 w-4" />
@@ -306,14 +364,14 @@ export default function Home() {
       </section>
 
       {/* Features Section */}
-      <section className="py-20 bg-gray-50">
+      <section className="py-20 bg-muted/30">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+          <div className="text-center mb-16 animate-slide-up">
+            <h2 className="text-responsive-2xl font-bold text-foreground mb-4">
               Tout ce dont vous avez besoin pour organiser des événements
               mémorables
             </h2>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+            <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
               Simplifiez votre organisation d&apos;événements avec des outils
               puissants et intuitifs.
             </p>
@@ -323,17 +381,20 @@ export default function Home() {
             {features.map((feature, index) => (
               <div
                 key={index}
-                className="text-center p-8 bg-white rounded-2xl shadow-sm hover:shadow-md transition-shadow"
+                className="text-center p-8 bg-card rounded-2xl shadow-sm hover-lift animate-slide-up"
+                style={{ animationDelay: `${index * 0.1}s` }}
               >
                 <div className="flex justify-center mb-6">
-                  <div className="p-4 bg-blue-100 rounded-2xl">
-                    <feature.icon className="h-8 w-8 text-blue-600" />
+                  <div
+                    className={`p-4 bg-gradient-to-r ${feature.gradient} rounded-2xl shadow-lg`}
+                  >
+                    <feature.icon className="h-8 w-8 text-white" />
                   </div>
                 </div>
-                <h3 className="text-xl font-bold text-gray-900 mb-4">
+                <h3 className="text-xl font-bold text-foreground mb-4">
                   {feature.title}
                 </h3>
-                <p className="text-gray-600 leading-relaxed">
+                <p className="text-muted-foreground leading-relaxed">
                   {feature.description}
                 </p>
               </div>
@@ -343,13 +404,13 @@ export default function Home() {
       </section>
 
       {/* Categories Section */}
-      <section className="py-20 bg-white">
+      <section className="py-20 bg-background">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+          <div className="text-center mb-16 animate-slide-up">
+            <h2 className="text-responsive-2xl font-bold text-foreground mb-4">
               Explorez nos catégories
             </h2>
-            <p className="text-xl text-gray-600">
+            <p className="text-xl text-muted-foreground">
               Trouvez exactement ce que vous cherchez parmi nos catégories
             </p>
           </div>
@@ -358,18 +419,21 @@ export default function Home() {
             {categories.map((category, index) => (
               <Card
                 key={index}
-                className="p-6 hover:shadow-lg transition-all duration-300 cursor-pointer border-0 shadow-sm"
+                className="p-6 hover-lift transition-all duration-300 cursor-pointer border-0 shadow-sm bg-card animate-slide-up"
+                style={{ animationDelay: `${index * 0.1}s` }}
               >
                 <CardContent className="p-0">
                   <div className="flex items-center space-x-4">
-                    <div className={`p-3 rounded-xl ${category.color}`}>
-                      <category.icon className="h-6 w-6" />
+                    <div
+                      className={`p-3 rounded-xl bg-gradient-to-r ${category.color} shadow-lg`}
+                    >
+                      <category.icon className="h-6 w-6 text-white" />
                     </div>
                     <div>
-                      <h3 className="font-semibold text-gray-900 text-lg">
+                      <h3 className="font-semibold text-foreground text-lg">
                         {category.name}
                       </h3>
-                      <p className="text-gray-500">
+                      <p className="text-muted-foreground">
                         {category.count} événements
                       </p>
                     </div>
@@ -382,42 +446,51 @@ export default function Home() {
       </section>
 
       {/* Testimonials Section */}
-      <section className="py-20 bg-gray-50">
+      <section className="py-20 bg-muted/30">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+          <div className="text-center mb-16 animate-slide-up">
+            <h2 className="text-responsive-2xl font-bold text-foreground mb-4">
               Ce qu&apos;en disent nos utilisateurs
             </h2>
-            <p className="text-xl text-gray-600">
+            <p className="text-xl text-muted-foreground">
               Découvrez comment EventConnect transforme l&apos;organisation
               d&apos;événements
             </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {testimonials.map((testimonial) => (
+            {testimonials.map((testimonial, index) => (
               <Card
                 key={testimonial.id}
-                className="p-8 border-0 shadow-lg hover:shadow-xl transition-shadow"
+                className="p-8 border-0 shadow-lg hover-lift bg-card animate-slide-up"
+                style={{ animationDelay: `${index * 0.1}s` }}
               >
                 <CardContent className="p-0">
-                  <div className="flex items-center mb-6">
-                    <Quote className="h-8 w-8 text-blue-500 mr-3" />
+                  <div className="flex items-center mb-4">
+                    <Quote className="h-8 w-8 text-primary mr-3" />
+                    <div className="flex">
+                      {[...Array(testimonial.rating)].map((_, i) => (
+                        <Star
+                          key={i}
+                          className="h-4 w-4 text-yellow-400 fill-current"
+                        />
+                      ))}
+                    </div>
                   </div>
-                  <p className="text-gray-700 mb-6 leading-relaxed italic">
+                  <p className="text-muted-foreground mb-6 leading-relaxed italic">
                     &quot;{testimonial.content}&quot;
                   </p>
                   <div className="flex items-center">
-                    <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mr-4">
-                      <span className="text-blue-600 font-semibold text-sm">
+                    <div className="w-12 h-12 bg-gradient-to-r from-primary to-primary/80 rounded-full flex items-center justify-center mr-4">
+                      <span className="text-primary-foreground font-semibold text-sm">
                         {testimonial.avatar}
                       </span>
                     </div>
                     <div>
-                      <p className="font-semibold text-gray-900">
+                      <p className="font-semibold text-foreground">
                         {testimonial.author}
                       </p>
-                      <p className="text-gray-500 text-sm">
+                      <p className="text-muted-foreground text-sm">
                         {testimonial.role}
                       </p>
                     </div>
@@ -430,35 +503,40 @@ export default function Home() {
       </section>
 
       {/* CTA Section */}
-      <section className="py-20 bg-gradient-to-r from-blue-600 to-violet-600 text-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="text-3xl md:text-4xl font-bold mb-4">
-            Prêt à organiser votre prochain événement ?
-          </h2>
-          <p className="text-xl mb-8 text-blue-100 max-w-2xl mx-auto">
-            Rejoignez des milliers d&apos;organisateurs et de participants qui
-            font confiance à EventConnect pour créer des expériences mémorables.
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            {/* {!user && ( */}
-            <>
+      <section className="py-20 bg-gradient-to-r from-primary to-primary/90 text-primary-foreground relative overflow-hidden">
+        <div className="absolute inset-0 bg-grid-pattern opacity-10"></div>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative">
+          <div className="animate-fade-in">
+            <div className="flex justify-center mb-6">
+              <div className="p-4 bg-white/10 rounded-2xl backdrop-blur">
+                <Zap className="h-12 w-12 text-primary-foreground" />
+              </div>
+            </div>
+            <h2 className="text-responsive-2xl font-bold mb-4">
+              Prêt à organiser votre prochain événement ?
+            </h2>
+            <p className="text-xl mb-8 text-primary-foreground/80 max-w-2xl mx-auto">
+              Rejoignez des milliers d&apos;organisateurs et de participants qui
+              font confiance à EventConnect pour créer des expériences
+              mémorables.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button
                 size="lg"
-                className="bg-white text-blue-600 hover:bg-gray-100 px-8 py-4 text-lg"
+                className="bg-background text-primary hover:bg-background/90 px-8 py-4 text-lg hover-glow"
                 asChild
               >
-                <Link href="/inscription">Créer un compte</Link>
+                <Link href="/registration">Créer un compte gratuit</Link>
               </Button>
               <Button
                 size="lg"
                 variant="outline"
-                className="border-white text-white hover:bg-white hover:text-blue-600 px-8 py-4 text-lg"
+                className="border-primary-foreground text-primary-foreground hover:bg-primary-foreground hover:text-primary px-8 py-4 text-lg hover-lift"
                 asChild
               >
                 <Link href="/events">Découvrir les événements</Link>
               </Button>
-            </>
-            {/* )} */}
+            </div>
           </div>
         </div>
       </section>
