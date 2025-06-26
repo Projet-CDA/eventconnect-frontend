@@ -176,16 +176,16 @@ export default function Home() {
   ];
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen bg-background">
       {/* Hero Section */}
-      <section className="relative bg-gradient-to-br from-background via-background to-muted/30 py-20 overflow-hidden">
+      <section className="relative bg-gradient-to-br from-background via-background to-muted/20 py-20 overflow-hidden">
         <div className="absolute inset-0 bg-grid-pattern opacity-5"></div>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
           <div className="text-center max-w-4xl mx-auto animate-fade-in">
             <div className="mb-6">
               <Badge
                 variant="outline"
-                className="bg-primary/10 text-primary border-primary/20 px-4 py-2 hover-glow"
+                className="bg-primary/10 text-primary border-primary/30 px-4 py-2 hover:bg-primary/20 transition-colors"
               >
                 <Sparkles className="h-4 w-4 mr-2" />
                 Rejoignez des milliers d&apos;organisateurs ✨ Gratuit
@@ -207,7 +207,7 @@ export default function Home() {
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button
                 size="lg"
-                className="bg-primary hover:bg-primary/90 text-primary-foreground px-8 py-4 text-lg hover-glow"
+                className="bg-primary hover:bg-primary/90 text-primary-foreground px-8 py-4 text-lg shadow-lg hover:shadow-xl transition-all duration-300"
                 asChild
               >
                 <Link href="/registration">
@@ -218,7 +218,7 @@ export default function Home() {
               <Button
                 size="lg"
                 variant="outline"
-                className="border-border text-foreground hover:bg-accent px-8 py-4 text-lg hover-lift"
+                className="border-border text-foreground hover:bg-accent hover:text-accent-foreground px-8 py-4 text-lg transition-all duration-300"
                 asChild
               >
                 <Link href="/events">Découvrir les événements</Link>
@@ -229,7 +229,7 @@ export default function Home() {
       </section>
 
       {/* Stats Section */}
-      <section className="py-16 bg-card border-y border-border">
+      <section className="py-16 bg-card/50 border-y border-border/50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
             {stats.map((stat, index) => (
@@ -239,7 +239,7 @@ export default function Home() {
                 style={{ animationDelay: `${index * 0.1}s` }}
               >
                 <div className="flex justify-center mb-3">
-                  <div className="p-3 bg-primary/10 rounded-2xl">
+                  <div className="p-3 bg-primary/10 rounded-2xl border border-primary/20">
                     <stat.icon className="h-6 w-6 text-primary" />
                   </div>
                 </div>
@@ -270,7 +270,7 @@ export default function Home() {
             <Button
               variant="outline"
               asChild
-              className="hidden md:flex hover-lift"
+              className="hidden md:flex hover:bg-accent hover:text-accent-foreground transition-all duration-300"
             >
               <Link href="/events">
                 Voir tous les événements
@@ -283,7 +283,7 @@ export default function Home() {
             {featuredEvents.map((event, index) => (
               <Card
                 key={event.id}
-                className="overflow-hidden hover-lift border-0 shadow-lg bg-card animate-slide-up"
+                className="overflow-hidden hover:scale-105 transition-all duration-300 border-border/50 shadow-lg bg-card/50 backdrop-blur-sm"
                 style={{ animationDelay: `${index * 0.1}s` }}
               >
                 <div className="aspect-[4/3] relative overflow-hidden">
@@ -292,16 +292,16 @@ export default function Home() {
                     alt={event.title}
                     className="w-full h-full object-cover transition-transform duration-500 hover:scale-110"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
                   <div className="absolute top-4 left-4">
-                    <Badge className="bg-background/90 text-foreground hover:bg-background">
+                    <Badge className="bg-background/90 text-foreground border border-border/50">
                       {event.category}
                     </Badge>
                   </div>
                   <div className="absolute top-4 right-4">
                     <Badge
                       variant="outline"
-                      className="bg-background/90 text-foreground border-border"
+                      className="bg-background/90 text-foreground border-border/50"
                     >
                       {event.price}
                     </Badge>
@@ -344,7 +344,10 @@ export default function Home() {
                     </div>
                   </div>
 
-                  <Button className="w-full hover-glow" asChild>
+                  <Button
+                    className="w-full bg-primary hover:bg-primary/90 text-primary-foreground transition-all duration-300"
+                    asChild
+                  >
                     <Link href={`/events/${event.id}`}>Voir les détails</Link>
                   </Button>
                 </CardContent>
@@ -353,7 +356,11 @@ export default function Home() {
           </div>
 
           <div className="text-center mt-12 md:hidden">
-            <Button variant="outline" asChild className="hover-lift">
+            <Button
+              variant="outline"
+              asChild
+              className="hover:bg-accent hover:text-accent-foreground transition-all duration-300"
+            >
               <Link href="/events">
                 Voir tous les événements
                 <ArrowRight className="ml-2 h-4 w-4" />
@@ -364,7 +371,7 @@ export default function Home() {
       </section>
 
       {/* Features Section */}
-      <section className="py-20 bg-muted/30">
+      <section className="py-20 bg-muted/20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16 animate-slide-up">
             <h2 className="text-responsive-2xl font-bold text-foreground mb-4">
@@ -381,7 +388,7 @@ export default function Home() {
             {features.map((feature, index) => (
               <div
                 key={index}
-                className="text-center p-8 bg-card rounded-2xl shadow-sm hover-lift animate-slide-up"
+                className="text-center p-8 bg-card/50 rounded-2xl shadow-lg hover:scale-105 transition-all duration-300 border border-border/50 backdrop-blur-sm animate-slide-up"
                 style={{ animationDelay: `${index * 0.1}s` }}
               >
                 <div className="flex justify-center mb-6">
@@ -419,7 +426,7 @@ export default function Home() {
             {categories.map((category, index) => (
               <Card
                 key={index}
-                className="p-6 hover-lift transition-all duration-300 cursor-pointer border-0 shadow-sm bg-card animate-slide-up"
+                className="p-6 hover:scale-105 transition-all duration-300 cursor-pointer border-border/50 shadow-lg bg-card/50 backdrop-blur-sm animate-slide-up"
                 style={{ animationDelay: `${index * 0.1}s` }}
               >
                 <CardContent className="p-0">
@@ -446,7 +453,7 @@ export default function Home() {
       </section>
 
       {/* Testimonials Section */}
-      <section className="py-20 bg-muted/30">
+      <section className="py-20 bg-muted/20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16 animate-slide-up">
             <h2 className="text-responsive-2xl font-bold text-foreground mb-4">
@@ -462,7 +469,7 @@ export default function Home() {
             {testimonials.map((testimonial, index) => (
               <Card
                 key={testimonial.id}
-                className="p-8 border-0 shadow-lg hover-lift bg-card animate-slide-up"
+                className="p-8 border-border/50 shadow-lg hover:scale-105 transition-all duration-300 bg-card/50 backdrop-blur-sm animate-slide-up"
                 style={{ animationDelay: `${index * 0.1}s` }}
               >
                 <CardContent className="p-0">
@@ -481,7 +488,7 @@ export default function Home() {
                     &quot;{testimonial.content}&quot;
                   </p>
                   <div className="flex items-center">
-                    <div className="w-12 h-12 bg-gradient-to-r from-primary to-primary/80 rounded-full flex items-center justify-center mr-4">
+                    <div className="w-12 h-12 bg-gradient-to-r from-primary to-primary/80 rounded-full flex items-center justify-center mr-4 border border-primary/30">
                       <span className="text-primary-foreground font-semibold text-sm">
                         {testimonial.avatar}
                       </span>
@@ -508,14 +515,14 @@ export default function Home() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative">
           <div className="animate-fade-in">
             <div className="flex justify-center mb-6">
-              <div className="p-4 bg-white/10 rounded-2xl backdrop-blur">
+              <div className="p-4 bg-white/10 rounded-2xl backdrop-blur border border-white/20">
                 <Zap className="h-12 w-12 text-primary-foreground" />
               </div>
             </div>
             <h2 className="text-responsive-2xl font-bold mb-4">
               Prêt à organiser votre prochain événement ?
             </h2>
-            <p className="text-xl mb-8 text-primary-foreground/80 max-w-2xl mx-auto">
+            <p className="text-xl mb-8 text-primary-foreground/90 max-w-2xl mx-auto">
               Rejoignez des milliers d&apos;organisateurs et de participants qui
               font confiance à EventConnect pour créer des expériences
               mémorables.
@@ -523,14 +530,14 @@ export default function Home() {
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button
                 size="lg"
-                className="bg-background text-primary hover:bg-background/90 px-8 py-4 text-lg hover-glow"
+                className="bg-background text-primary hover:bg-background/90 px-8 py-4 text-lg shadow-lg hover:shadow-xl transition-all duration-300"
                 asChild
               >
                 <Link href="/registration">Créer un compte gratuit</Link>
               </Button>
               <Button
                 size="lg"
-                className="bg-background text-primary hover:bg-background/90 px-8 py-4 text-lg hover-glow"
+                className="bg-background text-primary hover:bg-background/90 px-8 py-4 text-lg shadow-lg hover:shadow-xl transition-all duration-300"
                 asChild
               >
                 <Link href="/events">Découvrir les événements</Link>
