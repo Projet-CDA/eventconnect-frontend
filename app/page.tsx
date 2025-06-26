@@ -426,7 +426,7 @@ export default function Home() {
             {categories.map((category, index) => (
               <Card
                 key={index}
-                className="p-6 hover:scale-105 transition-all duration-300 cursor-pointer border-border/50 shadow-lg bg-card/50 backdrop-blur-sm animate-slide-up"
+                className="p-6 hover:scale-105 transition-all duration-300 border-border/50 shadow-lg bg-card/50 backdrop-blur-sm animate-slide-up"
                 style={{ animationDelay: `${index * 0.1}s` }}
               >
                 <CardContent className="p-0">
