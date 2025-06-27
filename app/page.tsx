@@ -267,16 +267,6 @@ export default function Home() {
                 Découvrez les événements les plus populaires de notre plateforme
               </p>
             </div>
-            <Button
-              variant="outline"
-              asChild
-              className="hidden md:flex hover:bg-accent hover:text-accent-foreground transition-all duration-300"
-            >
-              <Link href="/events">
-                Voir tous les événements
-                <ArrowRight className="ml-2 h-4 w-4" />
-              </Link>
-            </Button>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -353,19 +343,6 @@ export default function Home() {
                 </CardContent>
               </Card>
             ))}
-          </div>
-
-          <div className="text-center mt-12 md:hidden">
-            <Button
-              variant="outline"
-              asChild
-              className="hover:bg-accent hover:text-accent-foreground transition-all duration-300"
-            >
-              <Link href="/events">
-                Voir tous les événements
-                <ArrowRight className="ml-2 h-4 w-4" />
-              </Link>
-            </Button>
           </div>
         </div>
       </section>
