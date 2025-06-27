@@ -42,26 +42,18 @@ export function Footer() {
               </li>
               <li>
                 <Link
-                  href="/categories"
+                  href="/comment-ca-marche"
                   className="text-muted-foreground hover:text-primary transition-colors hover:underline"
                 >
-                  Catégories
+                  Comment ça marche
                 </Link>
               </li>
               <li>
                 <Link
-                  href="/organisateurs"
+                  href="/a-propos"
                   className="text-muted-foreground hover:text-primary transition-colors hover:underline"
                 >
-                  Organisateurs
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/aide"
-                  className="text-muted-foreground hover:text-primary transition-colors hover:underline"
-                >
-                  Centre d&apos;aide
+                  À propos
                 </Link>
               </li>
             </ul>
