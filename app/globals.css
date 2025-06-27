@@ -58,6 +58,25 @@
   }
 }
 
+/* Safe Area pour iOS et Android */
+@layer utilities {
+  .safe-area-pb {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+
+  .safe-area-pt {
+    padding-top: env(safe-area-inset-top);
+  }
+
+  .safe-area-pl {
+    padding-left: env(safe-area-inset-left);
+  }
+
+  .safe-area-pr {
+    padding-right: env(safe-area-inset-right);
+  }
+}
+
 @layer utilities {
   .line-clamp-2 {
     display: -webkit-box;
@@ -73,6 +92,55 @@
   .text-responsive-3xl {
     @apply text-3xl md:text-4xl lg:text-5xl xl:text-6xl;
   }
+}
+
+/* Bottom Navigation Animations */
+@keyframes bottom-nav-slide {
+  from {
+    opacity: 0;
+    transform: translateY(100%);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-bottom-nav {
+  animation: bottom-nav-slide 0.3s ease-out forwards;
+}
+
+/* Active tab indicator animation */
+@keyframes tab-indicator {
+  from {
+    opacity: 0;
+    scale: 0.8;
+  }
+  to {
+    opacity: 1;
+    scale: 1;
+  }
+}
+
+.animate-tab-indicator {
+  animation: tab-indicator 0.2s ease-out forwards;
+}
+
+/* Haptic feedback simulation */
+@keyframes haptic-feedback {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(0.95);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.animate-haptic {
+  animation: haptic-feedback 0.1s ease-in-out;
 }
 
 @keyframes slide-up {
@@ -199,52 +267,49 @@
 
 /* Animations pour le scroll */
 .scroll-animate {
-  transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+  opacity: 0;
+  transition: all 0.6s ease-out;
+}
+
+.scroll-animate.visible {
+  opacity: 1;
 }
 
 .scroll-animate.from-bottom {
   transform: translateY(50px);
-  opacity: 0;
 }
 
 .scroll-animate.from-bottom.visible {
   transform: translateY(0);
-  opacity: 1;
 }
 
 .scroll-animate.from-left {
   transform: translateX(-50px);
-  opacity: 0;
 }
 
 .scroll-animate.from-left.visible {
   transform: translateX(0);
-  opacity: 1;
 }
 
 .scroll-animate.from-right {
   transform: translateX(50px);
-  opacity: 0;
 }
 
 .scroll-animate.from-right.visible {
   transform: translateX(0);
-  opacity: 1;
 }
 
 .scroll-animate.scale {
   transform: scale(0.8);
-  opacity: 0;
 }
 
 .scroll-animate.scale.visible {
   transform: scale(1);
-  opacity: 1;
 }
 
-/* Animation de fade avec délai */
+/* Delayed fade in animation */
 .fade-in-delay {
-  animation: fadeInDelay 0.8s ease-out forwards;
+  animation: fadeInDelay 0.6s ease-out forwards;
 }
 
 @keyframes fadeInDelay {
@@ -258,18 +323,56 @@
   }
 }
 
-/* Transitions pour le mode sombre */
-* {
-  transition: background-color 0.3s ease, border-color 0.3s ease,
-    color 0.3s ease;
+/* Bottom Navigation Specific Styles */
+.bottom-nav-item {
+  @apply flex flex-col items-center justify-center space-y-1 transition-all duration-200 active:scale-95;
+  min-height: 48px; /* Taille de cible minimale pour accessibilité */
 }
 
-/* Styles de base pour le mode sombre */
+.bottom-nav-item.active {
+  @apply text-primary;
+}
+
+.bottom-nav-item:not(.active) {
+  @apply text-muted-foreground;
+}
+
+.bottom-nav-icon {
+  @apply h-5 w-5 transition-all duration-200;
+}
+
+.bottom-nav-label {
+  @apply text-xs font-medium transition-all duration-200;
+}
+
+/* Thème sombre spécifique */
+* {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
 .dark {
   color-scheme: dark;
 }
 
 .dark body {
-  background-color: #111827;
-  color: #f9fafb;
+  @apply bg-gray-900 text-gray-100;
+}
+
+/* Mobile-first utilities */
+@media (max-width: 768px) {
+  .bottom-nav-item {
+    @apply active:bg-primary/5 active:rounded-lg;
+  }
+
+  /* Améliorer la zone de clic sur mobile */
+  .bottom-nav-item::before {
+    content: "";
+    position: absolute;
+    top: -8px;
+    left: -8px;
+    right: -8px;
+    bottom: -8px;
+    border-radius: 12px;
+  }
 }
