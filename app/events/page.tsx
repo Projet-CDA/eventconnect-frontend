@@ -66,137 +66,7 @@ interface Event {
 }
 
 // Données mockées pour les événements
-const mockEvents: Event[] = [
-  {
-    id: "1",
-    title: "Meetup Développement Web",
-    description:
-      "Rencontre entre développeurs pour échanger sur les dernières technologies web.",
-    start_date: "2024-02-15T18:00:00Z",
-    end_date: "2024-02-15T21:00:00Z",
-    location: "Paris, France",
-    max_participants: 50,
-    image_url:
-      "https://images.pexels.com/photos/2774556/pexels-photo-2774556.jpeg?auto=compress&cs=tinysrgb&w=800",
-    status: "active",
-    created_at: "2024-01-15T10:00:00Z",
-    category: "Tech",
-    price: "Gratuit",
-    user_profiles: {
-      first_name: "Jean",
-      last_name: "Dupont",
-      avatar_url: null,
-    },
-    event_participants: [],
-  },
-  {
-    id: "2",
-    title: "Conférence IA & Machine Learning",
-    description:
-      "Découvrez les avancées en intelligence artificielle et apprentissage automatique.",
-    start_date: "2024-02-20T14:00:00Z",
-    end_date: "2024-02-20T18:00:00Z",
-    location: "Lyon, France",
-    max_participants: 100,
-    image_url:
-      "https://images.pexels.com/photos/8349296/pexels-photo-8349296.jpeg?auto=compress&cs=tinysrgb&w=800",
-    status: "active",
-    created_at: "2024-01-10T09:00:00Z",
-    category: "Tech",
-    price: "35€",
-    user_profiles: {
-      first_name: "Marie",
-      last_name: "Martin",
-      avatar_url: null,
-    },
-    event_participants: [],
-  },
-  {
-    id: "3",
-    title: "Atelier Design UX/UI",
-    description:
-      "Apprenez les principes du design d'interface utilisateur moderne.",
-    start_date: "2024-02-25T10:00:00Z",
-    end_date: "2024-02-25T17:00:00Z",
-    location: "Marseille, France",
-    max_participants: 25,
-    image_url:
-      "https://images.pexels.com/photos/196644/pexels-photo-196644.jpeg?auto=compress&cs=tinysrgb&w=800",
-    status: "active",
-    created_at: "2024-01-20T14:00:00Z",
-    category: "Design",
-    price: "45€",
-    user_profiles: {
-      first_name: "Sophie",
-      last_name: "Bernard",
-      avatar_url: null,
-    },
-    event_participants: [],
-  },
-  {
-    id: "4",
-    title: "Concert de Jazz",
-    description: "Soirée jazz avec des artistes locaux et internationaux.",
-    start_date: "2024-03-05T20:00:00Z",
-    end_date: "2024-03-05T23:00:00Z",
-    location: "Nice, France",
-    max_participants: 200,
-    image_url:
-      "https://images.pexels.com/photos/1763075/pexels-photo-1763075.jpeg?auto=compress&cs=tinysrgb&w=800",
-    status: "active",
-    created_at: "2024-01-25T16:00:00Z",
-    category: "Musique",
-    price: "25€",
-    user_profiles: {
-      first_name: "Alex",
-      last_name: "Dubois",
-      avatar_url: null,
-    },
-    event_participants: [],
-  },
-  {
-    id: "5",
-    title: "Randonnée en Montagne",
-    description: "Découverte des sentiers de montagne avec guide expérimenté.",
-    start_date: "2024-03-10T08:00:00Z",
-    end_date: "2024-03-10T18:00:00Z",
-    location: "Chamonix, France",
-    max_participants: 15,
-    image_url:
-      "https://images.pexels.com/photos/618848/pexels-photo-618848.jpeg?auto=compress&cs=tinysrgb&w=800",
-    status: "active",
-    created_at: "2024-02-01T12:00:00Z",
-    category: "Sport",
-    price: "20€",
-    user_profiles: {
-      first_name: "Pierre",
-      last_name: "Moreau",
-      avatar_url: null,
-    },
-    event_participants: [],
-  },
-  {
-    id: "6",
-    title: "Cours de Cuisine Française",
-    description: "Apprenez à cuisiner les plats traditionnels français.",
-    start_date: "2024-03-15T14:00:00Z",
-    end_date: "2024-03-15T17:00:00Z",
-    location: "Toulouse, France",
-    max_participants: 12,
-    image_url:
-      "https://images.pexels.com/photos/3184306/pexels-photo-3184306.jpeg?auto=compress&cs=tinysrgb&w=800",
-    status: "active",
-    created_at: "2024-02-05T10:00:00Z",
-    category: "Cuisine",
-    price: "50€",
-    user_profiles: {
-      first_name: "Claire",
-      last_name: "Leblanc",
-      avatar_url: null,
-    },
-    event_participants: [],
-  },
-];
+// const mockEvents: Event[] = [ ... ]; // <-- On commente ou supprime cette partie
 
 const categories = [
   { value: "all", label: "Toutes les catégories", color: "bg-gray-500" },
@@ -223,6 +93,46 @@ export default function EventsListPage() {
   useEffect(() => {
     fetchEvents();
   }, []);
+
+  // Nouvelle fonction pour mapper les données backend vers le format frontend
+  const mapBackendEvent = (e: any): Event => ({
+    id: e.id?.toString() ?? "",
+    title: e.nom ?? "",
+    description: e.description ?? "",
+    start_date: e.date_et_heure ?? "",
+    end_date: e.date_et_heure ?? "",
+    location: e.lieu ?? "",
+    max_participants: e.nombre_max_participants ?? null,
+    image_url: e.image_url ?? null, // champ optionnel, à adapter si besoin
+    status: e.statut ?? "",
+    created_at: e.date_creation ?? "",
+    category: e.categorie ?? "",
+    price: e.prix !== undefined ? `${e.prix}€` : "Gratuit",
+    user_profiles: {
+      first_name: "", // à compléter si tu ajoutes le créateur dans la requête
+      last_name: "",
+      avatar_url: null,
+    },
+    event_participants: [], // à compléter si tu ajoutes les participants
+  });
+
+  const fetchEvents = async () => {
+    try {
+      setLoading(true);
+      const response = await fetch("http://localhost:3000/api/evenements");
+      const data = await response.json();
+      if (Array.isArray(data)) {
+        setEvents(data.map(mapBackendEvent));
+      } else {
+        setEvents([]);
+      }
+      setLoading(false);
+    } catch (error) {
+      console.error("Erreur:", error);
+      toast.error("Une erreur est survenue");
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
     let filtered = events;
@@ -268,19 +178,6 @@ export default function EventsListPage() {
 
     setFilteredEvents(filtered);
   }, [searchTerm, events, selectedCategory, sortBy]);
-
-  const fetchEvents = async () => {
-    try {
-      // Simulation du chargement
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-      setEvents(mockEvents);
-      setLoading(false);
-    } catch (error) {
-      console.error("Erreur:", error);
-      toast.error("Une erreur est survenue");
-      setLoading(false);
-    }
-  };
 
   const joinEvent = async (eventId: string) => {
     try {
