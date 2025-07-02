@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useAuthCheck } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -23,6 +25,8 @@ import {
 import { toast } from "sonner";
 
 export default function ConnectPage() {
+  const router = useRouter();
+  const { login } = useAuthCheck();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
@@ -63,16 +67,38 @@ export default function ConnectPage() {
     setLoading(true);
 
     try {
-      // Simulation de l'authentification
-      await new Promise((resolve) => setTimeout(resolve, 2000));
+      // Connexion à l'API backend
+      const response = await fetch("http://localhost:3000/api/utilisateurs/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email: email,
+          mot_de_passe: password,
+        }),
+      });
 
-      // Simulation d'une connexion réussie
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || "Erreur de connexion");
+      }
+
+      // Sauvegarder le token et les données utilisateur
+      login(data.token, {
+        id: data.utilisateur.id,
+        nom: data.utilisateur.nom,
+        email: data.utilisateur.email,
+      });
+
       toast.success("Connexion réussie ! Redirection...");
 
-      // Ici, vous ajouteriez la logique de redirection
-      // router.push('/dashboard');
-    } catch (error) {
-      toast.error("Erreur de connexion. Vérifiez vos identifiants.");
+      // Redirection vers la page des événements
+      router.push("/events");
+    } catch (error: any) {
+      console.error("Erreur de connexion:", error);
+      toast.error(error.message || "Erreur de connexion. Vérifiez vos identifiants.");
     } finally {
       setLoading(false);
     }

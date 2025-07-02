@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useAuthCheck } from "@/hooks/useAuth";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -217,6 +218,7 @@ export default function EventsListPage() {
   const [sortBy, setSortBy] = useState("date");
   const [showFilters, setShowFilters] = useState(false);
   const [favoriteEvents, setFavoriteEvents] = useState<string[]>([]);
+  const { isAuthenticated, isLoading: authLoading } = useAuthCheck();
 
   useEffect(() => {
     fetchEvents();
@@ -521,9 +523,9 @@ export default function EventsListPage() {
 
               {/* Bouton créer événement */}
               <Button asChild className="hidden sm:flex">
-                <Link href="/registration">
+                <Link href={isAuthenticated ? "/events/create" : "/registration"}>
                   <Plus className="h-4 w-4 mr-2" />
-                  Créer un événement
+                  {isAuthenticated ? "Créer un événement" : "Se connecter pour créer"}
                 </Link>
               </Button>
             </div>
@@ -685,8 +687,9 @@ export default function EventsListPage() {
           size="lg"
           className="h-14 w-14 rounded-full shadow-lg bg-primary hover:bg-primary/90 text-primary-foreground"
           asChild
+          title={isAuthenticated ? "Créer un événement" : "Se connecter pour créer"}
         >
-          <Link href="/registration">
+          <Link href={isAuthenticated ? "/events/create" : "/registration"}>
             <Plus className="h-6 w-6" />
           </Link>
         </Button>

@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useAuthCheck } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -44,6 +46,8 @@ interface FormErrors {
 }
 
 export default function RegistrationPage() {
+  const router = useRouter();
+  const { login } = useAuthCheck();
   const [formData, setFormData] = useState<FormData>({
     firstName: "",
     lastName: "",
@@ -192,15 +196,60 @@ export default function RegistrationPage() {
     setLoading(true);
 
     try {
-      // Simulation de l'inscription
-      await new Promise((resolve) => setTimeout(resolve, 2500));
+      // Inscription via l'API backend
+      const registerResponse = await fetch("http://localhost:3000/api/utilisateurs/register", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          nom: `${formData.firstName} ${formData.lastName}`,
+          email: formData.email,
+          mot_de_passe: formData.password,
+        }),
+      });
 
-      toast.success("Inscription réussie ! Bienvenue sur EventConnect !");
+      const registerData = await registerResponse.json();
 
-      // Ici, vous ajouteriez la logique de redirection
+      if (!registerResponse.ok) {
+        throw new Error(registerData.message || "Erreur lors de l'inscription");
+      }
+
+      toast.success("Inscription réussie ! Connexion automatique...");
+
+      // Connexion automatique après inscription
+      const loginResponse = await fetch("http://localhost:3000/api/utilisateurs/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email: formData.email,
+          mot_de_passe: formData.password,
+        }),
+      });
+
+      const loginData = await loginResponse.json();
+
+      if (!loginResponse.ok) {
+        throw new Error("Inscription réussie mais erreur de connexion");
+      }
+
+      // Sauvegarder le token et les données utilisateur
+      login(loginData.token, {
+        id: loginData.utilisateur.id,
+        nom: loginData.utilisateur.nom,
+        email: loginData.utilisateur.email,
+      });
+
+      toast.success("Bienvenue sur EventConnect ! 🎉");
+
+      // Redirection vers la page des événements
+      router.push("/events");
       // router.push('/dashboard');
-    } catch (error) {
-      toast.error("Erreur lors de l'inscription. Veuillez réessayer.");
+    } catch (error: any) {
+      console.error("Erreur lors de l'inscription:", error);
+      toast.error(error.message || "Erreur lors de l'inscription. Veuillez réessayer.");
     } finally {
       setLoading(false);
     }
