@@ -223,19 +223,6 @@ export function Navbar() {
                 )}
               </Button>
 
-              {/* Notifications */}
-              <Button
-                variant="ghost"
-                size="icon"
-                className={`transition-all duration-200 ${
-                  scrolled
-                    ? "text-foreground/80 hover:text-foreground hover:bg-muted/50"
-                    : "text-white/90 hover:text-white hover:bg-white/10"
-                }`}
-              >
-                <Bell className="h-5 w-5" />
-              </Button>
-
               {/* Menu profil utilisateur connecté */}
               {isAuthenticated ? (
                 <DropdownMenu>
@@ -307,22 +294,12 @@ export function Navbar() {
                     variant="ghost"
                     className={`font-medium px-6 py-2 rounded-lg transition-all duration-200 ${
                       scrolled
-                        ? "text-foreground/80 hover:text-foreground hover:bg-muted/50"
-                        : "text-white/90 hover:text-white hover:bg-white/10"
-                    }`}
-                    asChild
-                  >
-                    <Link href="/connect">Se connecter</Link>
-                  </Button>
-                  <Button
-                    className={`font-semibold px-6 py-2 rounded-lg shadow-lg hover:shadow-xl transition-all duration-200 ${
-                      scrolled
                         ? "bg-primary hover:bg-primary/90 text-primary-foreground"
                         : "bg-white text-primary hover:bg-gray-100"
                     }`}
                     asChild
                   >
-                    <Link href="/registration">S&apos;inscrire</Link>
+                    <Link href="/connect">Se connecter</Link>
                   </Button>
                 </>
               )}
