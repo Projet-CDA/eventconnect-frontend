@@ -93,6 +93,7 @@ export default function ConnectPage() {
         id: data.utilisateur.id,
         nom: data.utilisateur.nom,
         email: data.utilisateur.email,
+        role: data.utilisateur.role,
       });
 
       toast.success("Connexion réussie ! Redirection...");
