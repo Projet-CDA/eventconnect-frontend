@@ -3,14 +3,24 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useAuthCheck } from "@/hooks/useAuth";
+import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Calendar } from "@/components/ui/calendar";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import { Separator } from "@/components/ui/separator";
 import {
   CalendarIcon,
@@ -52,7 +62,7 @@ interface FormErrors {
 
 const categories = [
   "Tech",
-  "Musique", 
+  "Musique",
   "Gastronomie",
   "Art",
   "Sport",
@@ -60,13 +70,13 @@ const categories = [
   "Formation",
   "Networking",
   "Culture",
-  "Autre"
+  "Autre",
 ];
 
 export default function CreateEventPage() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
-  const { isAuthenticated, isLoading: authLoading, user } = useAuthCheck();
+  const { isAuthenticated, isLoading: authLoading, user } = useAuth();
   const [formData, setFormData] = useState<FormData>({
     nom: "",
     description: "",
@@ -83,7 +93,7 @@ export default function CreateEventPage() {
   // Redirection si pas connecté
   useEffect(() => {
     if (!authLoading && !isAuthenticated) {
-      router.push('/registration');
+      router.push("/registration");
     }
   }, [authLoading, isAuthenticated, router]);
 
@@ -105,7 +115,8 @@ export default function CreateEventPage() {
         if (!value?.trim()) {
           newErrors.description = "La description est requise";
         } else if (value.trim().length < 10) {
-          newErrors.description = "La description doit contenir au moins 10 caractères";
+          newErrors.description =
+            "La description doit contenir au moins 10 caractères";
         } else {
           delete newErrors.description;
         }
@@ -155,19 +166,28 @@ export default function CreateEventPage() {
   };
 
   const validateForm = () => {
-    const requiredFields: (keyof FormData)[] = ["nom", "description", "categorie", "lieu", "date", "heure"];
-    
+    const requiredFields: (keyof FormData)[] = [
+      "nom",
+      "description",
+      "categorie",
+      "lieu",
+      "date",
+      "heure",
+    ];
+
     requiredFields.forEach((field) => {
       validateField(field, formData[field]);
     });
 
-    return Object.keys(errors).length === 0 && 
-           formData.nom && 
-           formData.description && 
-           formData.categorie && 
-           formData.lieu && 
-           formData.date && 
-           formData.heure;
+    return (
+      Object.keys(errors).length === 0 &&
+      formData.nom &&
+      formData.description &&
+      formData.categorie &&
+      formData.lieu &&
+      formData.date &&
+      formData.heure
+    );
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -187,17 +207,19 @@ export default function CreateEventPage() {
         description: formData.description,
         categorie: formData.categorie,
         lieu: formData.lieu,
-        date_et_heure: `${format(formData.date!, 'yyyy-MM-dd')}T${formData.heure}:00Z`,
+        date_et_heure: `${format(formData.date!, "yyyy-MM-dd")}T${
+          formData.heure
+        }:00Z`,
         nombre_max_participants: formData.nombre_max_participants || null,
-        prix: formData.prix || 0.00,
+        prix: formData.prix || 0.0,
         // image_url n'est pas dans le modèle backend actuel
       };
 
       // Récupérer le token du localStorage
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem("token");
       if (!token) {
         toast.error("Vous devez être connecté pour créer un événement");
-        router.push('/registration');
+        router.push("/registration");
         return;
       }
 
@@ -205,7 +227,7 @@ export default function CreateEventPage() {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify(eventData),
       });
@@ -215,9 +237,9 @@ export default function CreateEventPage() {
       }
 
       const result = await response.json();
-      
+
       toast.success("Événement créé avec succès ! 🎉");
-      
+
       // Redirection vers la page des événements
       router.push("/events");
     } catch (error) {
@@ -279,7 +301,9 @@ export default function CreateEventPage() {
                 <CalendarIcon className="h-5 w-5 text-primary" />
               </div>
               <div>
-                <CardTitle className="text-lg">Informations de l'événement</CardTitle>
+                <CardTitle className="text-lg">
+                  Informations de l'événement
+                </CardTitle>
                 <p className="text-sm text-muted-foreground">
                   Remplissez les détails de votre événement
                 </p>
@@ -316,8 +340,13 @@ export default function CreateEventPage() {
                 <Textarea
                   placeholder="Décrivez votre événement, le programme, ce que les participants peuvent attendre..."
                   value={formData.description}
-                  onChange={(e) => handleInputChange("description", e.target.value)}
-                  className={cn("min-h-[120px]", errors.description && "border-red-500")}
+                  onChange={(e) =>
+                    handleInputChange("description", e.target.value)
+                  }
+                  className={cn(
+                    "min-h-[120px]",
+                    errors.description && "border-red-500"
+                  )}
                 />
                 {errors.description && (
                   <p className="text-sm text-red-500 flex items-center gap-1">
@@ -335,9 +364,13 @@ export default function CreateEventPage() {
                   </label>
                   <Select
                     value={formData.categorie}
-                    onValueChange={(value) => handleInputChange("categorie", value)}
+                    onValueChange={(value) =>
+                      handleInputChange("categorie", value)
+                    }
                   >
-                    <SelectTrigger className={cn(errors.categorie && "border-red-500")}>
+                    <SelectTrigger
+                      className={cn(errors.categorie && "border-red-500")}
+                    >
                       <SelectValue placeholder="Sélectionner une catégorie" />
                     </SelectTrigger>
                     <SelectContent>
@@ -452,8 +485,11 @@ export default function CreateEventPage() {
                     placeholder="Ex: 50"
                     min="1"
                     value={formData.nombre_max_participants || ""}
-                    onChange={(e) => 
-                      handleInputChange("nombre_max_participants", e.target.value ? parseInt(e.target.value) : undefined)
+                    onChange={(e) =>
+                      handleInputChange(
+                        "nombre_max_participants",
+                        e.target.value ? parseInt(e.target.value) : undefined
+                      )
                     }
                   />
                   <p className="text-xs text-muted-foreground">
@@ -472,8 +508,11 @@ export default function CreateEventPage() {
                     min="0"
                     step="0.01"
                     value={formData.prix || ""}
-                    onChange={(e) => 
-                      handleInputChange("prix", e.target.value ? parseFloat(e.target.value) : undefined)
+                    onChange={(e) =>
+                      handleInputChange(
+                        "prix",
+                        e.target.value ? parseFloat(e.target.value) : undefined
+                      )
                     }
                   />
                   <p className="text-xs text-muted-foreground">
@@ -491,7 +530,9 @@ export default function CreateEventPage() {
                 <Input
                   placeholder="https://exemple.com/image.jpg"
                   value={formData.image_url}
-                  onChange={(e) => handleInputChange("image_url", e.target.value)}
+                  onChange={(e) =>
+                    handleInputChange("image_url", e.target.value)
+                  }
                 />
                 <p className="text-xs text-muted-foreground">
                   URL d'une image pour illustrer votre événement
@@ -511,8 +552,8 @@ export default function CreateEventPage() {
                 >
                   Annuler
                 </Button>
-                <Button 
-                  type="submit" 
+                <Button
+                  type="submit"
                   className="flex-1 bg-primary hover:bg-primary/90"
                   disabled={loading}
                 >
@@ -535,4 +576,4 @@ export default function CreateEventPage() {
       </div>
     </div>
   );
-} 
+}

@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useAuthCheck } from "@/hooks/useAuth";
+import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -47,7 +47,7 @@ interface FormErrors {
 
 export default function RegistrationPage() {
   const router = useRouter();
-  const { login } = useAuthCheck();
+  const { login } = useAuth();
   const [formData, setFormData] = useState<FormData>({
     firstName: "",
     lastName: "",
@@ -197,17 +197,20 @@ export default function RegistrationPage() {
 
     try {
       // Inscription via l'API backend
-      const registerResponse = await fetch("http://localhost:3000/api/utilisateurs/register", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          nom: `${formData.firstName} ${formData.lastName}`,
-          email: formData.email,
-          mot_de_passe: formData.password,
-        }),
-      });
+      const registerResponse = await fetch(
+        "http://localhost:3000/api/utilisateurs/register",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            nom: `${formData.firstName} ${formData.lastName}`,
+            email: formData.email,
+            mot_de_passe: formData.password,
+          }),
+        }
+      );
 
       const registerData = await registerResponse.json();
 
@@ -218,16 +221,19 @@ export default function RegistrationPage() {
       toast.success("Inscription réussie ! Connexion automatique...");
 
       // Connexion automatique après inscription
-      const loginResponse = await fetch("http://localhost:3000/api/utilisateurs/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          email: formData.email,
-          mot_de_passe: formData.password,
-        }),
-      });
+      const loginResponse = await fetch(
+        "http://localhost:3000/api/utilisateurs/login",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            email: formData.email,
+            mot_de_passe: formData.password,
+          }),
+        }
+      );
 
       const loginData = await loginResponse.json();
 
@@ -249,7 +255,9 @@ export default function RegistrationPage() {
       // router.push('/dashboard');
     } catch (error: any) {
       console.error("Erreur lors de l'inscription:", error);
-      toast.error(error.message || "Erreur lors de l'inscription. Veuillez réessayer.");
+      toast.error(
+        error.message || "Erreur lors de l'inscription. Veuillez réessayer."
+      );
     } finally {
       setLoading(false);
     }
@@ -277,7 +285,7 @@ export default function RegistrationPage() {
             Créer votre compte
           </h1>
           <p className="text-muted-foreground">
-            Rejoignez des milliers d'organisateurs d'événements
+            Rejoignez des milliers d&apos;organisateurs d&apos;événements
           </p>
         </div>
 
@@ -589,12 +597,12 @@ export default function RegistrationPage() {
                         htmlFor="terms"
                         className="text-sm text-muted-foreground cursor-pointer leading-relaxed"
                       >
-                        J'accepte les{" "}
+                        J&apos;accepte les{" "}
                         <Link
                           href="/terms"
                           className="text-primary hover:underline font-medium"
                         >
-                          conditions d'utilisation
+                          conditions d&apos;utilisation
                         </Link>{" "}
                         et la{" "}
                         <Link
@@ -659,7 +667,7 @@ export default function RegistrationPage() {
                     </div>
                     <div className="relative flex justify-center text-xs uppercase">
                       <span className="bg-background px-2 text-muted-foreground">
-                        Ou s'inscrire avec
+                        Ou s&apos;inscrire avec
                       </span>
                     </div>
                   </div>
