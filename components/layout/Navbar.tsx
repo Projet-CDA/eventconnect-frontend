@@ -233,9 +233,9 @@ export function Navbar() {
                         scrolled ? "hover:bg-muted/50" : "hover:bg-white/10"
                       }`}
                     >
-                      <Avatar className="h-8 w-8">
+                      <Avatar className="h-8 w-8 border-2 border-white shadow-sm">
                         <AvatarImage src="" alt={user?.nom || "Utilisateur"} />
-                        <AvatarFallback className="bg-primary/10 text-primary font-semibold">
+                        <AvatarFallback className="bg-primary text-white font-semibold">
                           {getUserInitials()}
                         </AvatarFallback>
                       </Avatar>
@@ -405,9 +405,9 @@ export function Navbar() {
             {isAuthenticated && (
               <div className="mb-6 p-4 bg-muted/50 rounded-xl">
                 <div className="flex items-center space-x-3">
-                  <Avatar className="h-12 w-12">
+                  <Avatar className="h-12 w-12 border-2 border-white shadow-sm">
                     <AvatarImage src="" alt={user?.nom || "Utilisateur"} />
-                    <AvatarFallback className="bg-primary/10 text-primary font-semibold">
+                    <AvatarFallback className="bg-primary text-white font-semibold">
                       {getUserInitials()}
                     </AvatarFallback>
                   </Avatar>
