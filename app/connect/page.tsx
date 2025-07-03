@@ -78,16 +78,6 @@ export default function ConnexionPage() {
     }
   };
 
-  // Déconnexion
-  const handleLogout = () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("user");
-    localStorage.removeItem("userId");
-    setLogoutMsg("Déconnexion réussie !");
-    toast.success("Déconnexion réussie !");
-    window.location.href = "/connect";
-  };
-
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-100 via-indigo-100 to-white">
       <div className="flex w-full max-w-4xl shadow-2xl rounded-2xl overflow-hidden bg-white/60 backdrop-blur-lg">
@@ -181,21 +171,6 @@ export default function ConnexionPage() {
                   )}
                 </Button>
               </form>
-
-              {/* BOUTON DÉCONNEXION */}
-              <div className="mt-6 text-center">
-                <Button
-                  type="button"
-                  variant="secondary"
-                  className="w-full"
-                  onClick={handleLogout}
-                >
-                  Se déconnecter
-                </Button>
-                {logoutMsg && (
-                  <div className="mt-2 text-green-600">{logoutMsg}</div>
-                )}
-              </div>
 
               <div className="mt-6 text-center">
                 <p className="text-sm text-gray-600">

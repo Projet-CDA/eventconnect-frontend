@@ -203,7 +203,7 @@ export default function Home() {
                   className="border-gray-300 text-gray-700 hover:bg-gray-50 px-8 py-4 text-lg"
                   asChild
                 >
-                  <Link href="/inscription">Créer un compte</Link>
+                  <Link href="/register">Créer un compte</Link>
                 </Button>
               </>
             </div>
@@ -447,7 +447,7 @@ export default function Home() {
                 className="bg-white text-blue-600 hover:bg-gray-100 px-8 py-4 text-lg"
                 asChild
               >
-                <Link href="/inscription">Créer un compte</Link>
+                <Link href="/registration">Créer un compte</Link>
               </Button>
               <Button
                 size="lg"

@@ -1,12 +1,38 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Menu, X } from "lucide-react";
 
+interface User {
+  id?: string;
+  userId?: string;
+  nom?: string;
+  role?: string;
+}
+
 export function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [user, setUser] = useState<User | null>(null);
+
+  useEffect(() => {
+    const userData = localStorage.getItem("user");
+    if (userData) {
+      try {
+        setUser(JSON.parse(userData));
+      } catch (e) {
+        setUser(null);
+      }
+    }
+  }, []);
+
+  // Id pour le lien profil
+  const userId = user?.id || user?.userId;
+  const userRole = user?.role;
+
+  // Fonction pour déterminer la destination du logo
+  const logoHref = userRole === "admin" ? "/admin" : "/";
 
   return (
     <nav className="bg-white border-b border-gray-100 sticky top-0 z-50">
@@ -14,7 +40,7 @@ export function Navbar() {
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
           <div className="flex items-center">
-            <Link href="/" className="flex items-center space-x-2">
+            <Link href={logoHref} className="flex items-center space-x-2">
               <span className="text-2xl font-bold text-blue-600">
                 EventConnect
               </span>
@@ -51,19 +77,32 @@ export function Navbar() {
 
           {/* Actions utilisateur - Desktop */}
           <div className="hidden md:flex items-center space-x-4">
-            <Button
-              variant="ghost"
-              className="text-gray-700 hover:text-blue-600 font-medium"
-              asChild
-            >
-              <Link href="/connect">Se connecter</Link>
-            </Button>
-            <Button
-              className="bg-gray-900 hover:bg-gray-800 text-white font-medium px-6"
-              asChild
-            >
-              <Link href="/registration">S&apos;inscrire</Link>
-            </Button>
+            {user && userId ? (
+              <Button
+                className="bg-gray-900 hover:bg-gray-800 text-white font-medium px-6"
+                asChild
+              >
+                <Link href={`/user/${userId}`}>
+                  {user.nom ? user.nom : "Profil"}
+                </Link>
+              </Button>
+            ) : (
+              <>
+                <Button
+                  variant="ghost"
+                  className="text-gray-700 hover:text-blue-600 font-medium"
+                  asChild
+                >
+                  <Link href="/connect">Se connecter</Link>
+                </Button>
+                <Button
+                  className="bg-gray-900 hover:bg-gray-800 text-white font-medium px-6"
+                  asChild
+                >
+                  <Link href="/registration">S&apos;inscrire</Link>
+                </Button>
+              </>
+            )}
           </div>
 
           {/* Menu mobile toggle */}
@@ -116,20 +155,32 @@ export function Navbar() {
               </Link>
 
               <div className="border-t border-gray-200 pt-4 pb-3 space-y-1">
-                <Link
-                  href="/connect"
-                  className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-blue-600 hover:bg-gray-50"
-                  onClick={() => setMobileMenuOpen(false)}
-                >
-                  Se connecter
-                </Link>
-                <Link
-                  href="/registration"
-                  className="block px-3 py-2 rounded-md text-base font-medium bg-gray-900 text-white hover:bg-gray-800"
-                  onClick={() => setMobileMenuOpen(false)}
-                >
-                  S&apos;inscrire
-                </Link>
+                {user && userId ? (
+                  <Link
+                    href={`/user/${userId}`}
+                    className="block px-3 py-2 rounded-md text-base font-medium bg-gray-900 text-white hover:bg-gray-800"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    {user.nom ? user.nom : "Profil"}
+                  </Link>
+                ) : (
+                  <>
+                    <Link
+                      href="/connect"
+                      className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-blue-600 hover:bg-gray-50"
+                      onClick={() => setMobileMenuOpen(false)}
+                    >
+                      Se connecter
+                    </Link>
+                    <Link
+                      href="/registration"
+                      className="block px-3 py-2 rounded-md text-base font-medium bg-gray-900 text-white hover:bg-gray-800"
+                      onClick={() => setMobileMenuOpen(false)}
+                    >
+                      S&apos;inscrire
+                    </Link>
+                  </>
+                )}
               </div>
             </div>
           </div>
