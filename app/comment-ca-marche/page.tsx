@@ -12,13 +12,13 @@ import { ArrowRight } from "lucide-react";
 
 export default function CommentCaMarchePage() {
   return (
-    <main className="min-h-screen bg-white">
+    <main className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
       {/* Header */}
       <header className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex flex-col items-center">
-        <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-center mb-2 mt-4">
+        <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-center mb-2 mt-4 text-gray-900 dark:text-white">
           Comment fonctionne EventConnect&nbsp;?
         </h1>
-        <p className="text-gray-600 text-center max-w-xl mb-6">
+        <p className="text-gray-600 text-center max-w-xl mb-6 text-gray-600 dark:text-gray-300">
           Découvrez comment notre plateforme simplifie l&apos;organisation et la
           participation à des événements collaboratifs.
         </p>
@@ -32,10 +32,10 @@ export default function CommentCaMarchePage() {
         {/* Step 1 */}
         <div className="flex flex-col md:flex-row items-center md:items-start gap-8">
           <div className="flex-1 order-2 md:order-1">
-            <h2 className="text-lg font-semibold mb-2">
+            <h2 className="text-lg font-semibold mb-2 text-gray-900 dark:text-white">
               1. Créez votre compte
             </h2>
-            <p className="text-gray-600 mb-2">
+            <p className="text-gray-600 mb-2 text-gray-600 dark:text-gray-300">
               Inscrivez-vous gratuitement en quelques clics et personnalisez
               votre profil pour commencer à organiser ou participer à des
               événements.
@@ -59,10 +59,10 @@ export default function CommentCaMarchePage() {
             />
           </div>
           <div className="flex-1">
-            <h2 className="text-lg font-semibold mb-2">
+            <h2 className="text-lg font-semibold mb-2 text-gray-900 dark:text-white">
               2. Explorez ou créez des événements
             </h2>
-            <p className="text-gray-600 mb-2">
+            <p className="text-gray-600 mb-2 text-gray-600 dark:text-gray-300">
               Parcourez les événements disponibles ou créez le vôtre. Ajoutez
               tous les détails nécessaires&nbsp;: description, date, lieu,
               capacité.
@@ -72,10 +72,10 @@ export default function CommentCaMarchePage() {
         {/* Step 3 */}
         <div className="flex flex-col md:flex-row items-center md:items-start gap-8">
           <div className="flex-1 order-2 md:order-1">
-            <h2 className="text-lg font-semibold mb-2">
+            <h2 className="text-lg font-semibold mb-2 text-gray-900 dark:text-white">
               3. Gérez et participez
             </h2>
-            <p className="text-gray-600 mb-2">
+            <p className="text-gray-600 mb-2 text-gray-600 dark:text-gray-300">
               Invitez des participants, communiquez avec eux, et profitez
               d&apos;outils de gestion simples et efficaces pour vos événements.
             </p>
@@ -97,7 +97,7 @@ export default function CommentCaMarchePage() {
 
       {/* FAQ */}
       <section className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-        <h2 className="text-xl font-bold text-center mb-8">
+        <h2 className="text-xl font-bold text-center mb-8 text-gray-900 dark:text-white">
           Questions fréquentes
         </h2>
         <Accordion type="single" collapsible className="space-y-2">
