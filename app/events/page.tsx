@@ -223,7 +223,7 @@ export default function EventsListPage() {
         </div>
 
         <Button asChild className="mt-4 md:mt-0">
-          <Link href="/evenements/nouveau">Créer un événement</Link>
+          <Link href="/events/createEvent">Créer un événement</Link>
         </Button>
       </div>
 
