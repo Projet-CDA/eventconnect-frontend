@@ -24,6 +24,11 @@ export function Navbar() {
   const [darkMode, setDarkMode] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const pathname = usePathname();
+  const [user, setUser] = useState<{
+    role?: string;
+    nom?: string;
+    id?: string;
+  } | null>(null);
 
   // Gérer le scroll pour navbar transparente
   useEffect(() => {
@@ -44,6 +49,19 @@ export function Navbar() {
     if (savedTheme === "dark" || (!savedTheme && prefersDark)) {
       setDarkMode(true);
       document.documentElement.classList.add("dark");
+    }
+  }, []);
+
+  useEffect(() => {
+    const userData = localStorage.getItem("user");
+    if (userData) {
+      try {
+        setUser(JSON.parse(userData));
+      } catch {
+        setUser(null);
+      }
+    } else {
+      setUser(null);
     }
   }, []);
 
@@ -88,6 +106,9 @@ export function Navbar() {
     return pathname.startsWith(href);
   };
 
+  // Déterminer la destination du logo selon le rôle
+  const logoHref = user?.role === "admin" ? "/admin" : "/";
+
   return (
     <>
       {/* Navbar fixe - Desktop et tablet */}
@@ -103,7 +124,7 @@ export function Navbar() {
             {/* Logo mobile optimisé */}
             <div className="flex items-center">
               <Link
-                href="/"
+                href={logoHref}
                 className="flex items-center space-x-2 sm:space-x-3 group"
                 onClick={closeMobileMenu}
               >
@@ -187,27 +208,42 @@ export function Navbar() {
                 )}
               </Button>
 
-              <Button
-                variant="ghost"
-                className={`font-medium px-6 py-2 rounded-lg transition-all duration-200 ${
-                  scrolled
-                    ? "text-foreground/80 hover:text-foreground hover:bg-muted/50"
-                    : "text-white/90 hover:text-white hover:bg-white/10"
-                }`}
-                asChild
-              >
-                <Link href="/connect">Se connecter</Link>
-              </Button>
-              <Button
-                className={`font-semibold px-6 py-2 rounded-lg shadow-lg hover:shadow-xl transition-all duration-200 ${
-                  scrolled
-                    ? "bg-primary hover:bg-primary/90 text-primary-foreground"
-                    : "bg-white text-primary hover:bg-gray-100"
-                }`}
-                asChild
-              >
-                <Link href="/registration">S'inscrire</Link>
-              </Button>
+              {user && user.nom && user.id ? (
+                <Button
+                  className={`font-semibold px-6 py-2 rounded-lg shadow-lg hover:shadow-xl transition-all duration-200 ${
+                    scrolled
+                      ? "bg-primary hover:bg-primary/90 text-primary-foreground"
+                      : "bg-white text-primary hover:bg-gray-100"
+                  }`}
+                  asChild
+                >
+                  <Link href={`/user/${user.id}`}>{user.nom}</Link>
+                </Button>
+              ) : (
+                <>
+                  <Button
+                    variant="ghost"
+                    className={`font-medium px-6 py-2 rounded-lg transition-all duration-200 ${
+                      scrolled
+                        ? "text-foreground/80 hover:text-foreground hover:bg-muted/50"
+                        : "text-white/90 hover:text-white hover:bg-white/10"
+                    }`}
+                    asChild
+                  >
+                    <Link href="/connect">Se connecter</Link>
+                  </Button>
+                  <Button
+                    className={`font-semibold px-6 py-2 rounded-lg shadow-lg hover:shadow-xl transition-all duration-200 ${
+                      scrolled
+                        ? "bg-primary hover:bg-primary/90 text-primary-foreground"
+                        : "bg-white text-primary hover:bg-gray-100"
+                    }`}
+                    asChild
+                  >
+                    <Link href="/registration">S'inscrire</Link>
+                  </Button>
+                </>
+              )}
             </div>
 
             {/* Actions mobiles - seulement pour tablet (md) */}

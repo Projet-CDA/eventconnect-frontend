@@ -1,11 +1,12 @@
 "use client";
 
-import { useState, useEffect, createContext, useContext } from 'react';
+import { useState, useEffect, createContext, useContext } from "react";
 
 interface User {
   id: number;
   nom: string;
   email: string;
+  role?: string;
 }
 
 interface AuthContextType {
@@ -21,7 +22,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (context === undefined) {
-    throw new Error('useAuth must be used within an AuthProvider');
+    throw new Error("useAuth must be used within an AuthProvider");
   }
   return context;
 };
@@ -36,30 +37,30 @@ export const useAuthCheck = () => {
 
   const checkAuthStatus = () => {
     try {
-      const token = localStorage.getItem('token');
-      const userData = localStorage.getItem('user');
-      
+      const token = localStorage.getItem("token");
+      const userData = localStorage.getItem("user");
+
       if (token && userData) {
         setUser(JSON.parse(userData));
       }
     } catch (error) {
-      console.error('Error checking auth status:', error);
-      localStorage.removeItem('token');
-      localStorage.removeItem('user');
+      console.error("Error checking auth status:", error);
+      localStorage.removeItem("token");
+      localStorage.removeItem("user");
     } finally {
       setIsLoading(false);
     }
   };
 
   const login = (token: string, userData: User) => {
-    localStorage.setItem('token', token);
-    localStorage.setItem('user', JSON.stringify(userData));
+    localStorage.setItem("token", token);
+    localStorage.setItem("user", JSON.stringify(userData));
     setUser(userData);
   };
 
   const logout = () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
     setUser(null);
   };
 
@@ -68,6 +69,6 @@ export const useAuthCheck = () => {
     isAuthenticated: !!user,
     login,
     logout,
-    isLoading
+    isLoading,
   };
-}; 
+};
