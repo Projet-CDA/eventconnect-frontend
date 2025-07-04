@@ -420,13 +420,9 @@ export default function EventsListPage() {
 
               {/* Bouton créer événement */}
               <Button asChild className="hidden sm:flex">
-                <Link
-                  href={isAuthenticated ? "/events/create" : "/registration"}
-                >
+                <Link href={isAuthenticated ? "/events/create" : "/registration"}>
                   <Plus className="h-4 w-4 mr-2" />
-                  {isAuthenticated
-                    ? "Créer un événement"
-                    : "Se connecter pour créer"}
+                  {isAuthenticated ? "Créer un événement" : "Se connecter pour créer"}
                 </Link>
               </Button>
             </div>
@@ -588,9 +584,7 @@ export default function EventsListPage() {
           size="lg"
           className="h-14 w-14 rounded-full shadow-lg bg-primary hover:bg-primary/90 text-primary-foreground"
           asChild
-          title={
-            isAuthenticated ? "Créer un événement" : "Se connecter pour créer"
-          }
+          title={isAuthenticated ? "Créer un événement" : "Se connecter pour créer"}
         >
           <Link href={isAuthenticated ? "/events/create" : "/registration"}>
             <Plus className="h-6 w-6" />

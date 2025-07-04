@@ -49,12 +49,79 @@ export default function EventDetailPage() {
   const [isRegistered, setIsRegistered] = useState(false);
   const [registrationLoading, setRegistrationLoading] = useState(false);
   const [participantsCount, setParticipantsCount] = useState(0);
+  const [showConfetti, setShowConfetti] = useState(false);
+  const [counterAnimation, setCounterAnimation] = useState("");
+  const [buttonAnimation, setButtonAnimation] = useState("");
+  const [isSyncing, setIsSyncing] = useState(false);
+
+  // Animation pour le compteur de participants
+  const animateCounter = (increase: boolean) => {
+    if (increase) {
+      setCounterAnimation("animate-counter-update animate-celebration");
+    } else {
+      setCounterAnimation("animate-pulse");
+    }
+    setTimeout(() => setCounterAnimation(""), 1500);
+  };
+
+  // Animation pour le bouton d'inscription
+  const animateButton = (type: "success" | "error") => {
+    if (type === "success") {
+      setButtonAnimation("animate-registration-success animate-glow");
+    } else {
+      setButtonAnimation("animate-shake");
+    }
+    setTimeout(() => setButtonAnimation(""), 2000);
+  };
+
+  // Effet confetti pour les inscriptions
+  const triggerConfetti = () => {
+    setShowConfetti(true);
+    setTimeout(() => setShowConfetti(false), 3000);
+  };
+
+
+
+  // Son de notification (Web Audio API)
+  const playNotificationSound = (type: "success" | "error") => {
+    try {
+      const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+      const oscillator = audioContext.createOscillator();
+      const gainNode = audioContext.createGain();
+      
+      oscillator.connect(gainNode);
+      gainNode.connect(audioContext.destination);
+      
+      if (type === "success") {
+        // Son de succès (do-mi-sol)
+        oscillator.frequency.setValueAtTime(523.25, audioContext.currentTime);
+        oscillator.frequency.setValueAtTime(659.25, audioContext.currentTime + 0.1);
+        oscillator.frequency.setValueAtTime(783.99, audioContext.currentTime + 0.2);
+      } else {
+        // Son d'erreur (fréquence descendante)
+        oscillator.frequency.setValueAtTime(400, audioContext.currentTime);
+        oscillator.frequency.exponentialRampToValueAtTime(200, audioContext.currentTime + 0.3);
+      }
+      
+      gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
+      gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
+      
+      oscillator.start(audioContext.currentTime);
+      oscillator.stop(audioContext.currentTime + 0.3);
+    } catch (error) {
+      // Silently fail if audio context is not supported
+      console.log("Audio not supported");
+    }
+  };
 
   useEffect(() => {
     if (params.id) {
       fetchEventDetails();
+      if (isAuthenticated) {
+        checkUserRegistration();
+      }
     }
-  }, [params.id]);
+  }, [params.id, isAuthenticated]);
 
   const fetchEventDetails = async () => {
     try {
@@ -68,15 +135,69 @@ export default function EventDetailPage() {
       const data = await response.json();
       setEvent(data);
       
-      // TODO: Récupérer le nombre de participants et vérifier l'inscription
-      // setParticipantsCount(data.participants_count || 0);
-      // setIsRegistered(data.is_registered || false);
+      // TODO: Récupérer le nombre de participants depuis l'API inscriptions
+      // Compter les inscriptions pour cet événement
+      await getParticipantsCount();
       
     } catch (error) {
       console.error("Erreur:", error);
       toast.error("Impossible de charger l'événement");
     } finally {
       setLoading(false);
+    }
+  };
+
+  const checkUserRegistration = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) return;
+
+      const response = await fetch("http://localhost:3000/api/inscriptions", {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (response.ok) {
+        const inscriptions = await response.json();
+        const isAlreadyRegistered = inscriptions.some(
+          (inscription: any) => inscription.evenement_id === parseInt(params.id as string)
+        );
+        setIsRegistered(isAlreadyRegistered);
+      }
+    } catch (error) {
+      console.error("Erreur vérification inscription:", error);
+    }
+  };
+
+  const getParticipantsCount = async (showSyncIndicator = true) => {
+    try {
+      if (showSyncIndicator) {
+        setIsSyncing(true);
+      }
+      
+      const response = await fetch(`http://localhost:3000/api/inscriptions/count/${params.id}`);
+      if (response.ok) {
+        const data = await response.json();
+        const actualCount = data.count;
+        
+        // Mettre à jour avec le vrai compteur de la BDD
+        setParticipantsCount(actualCount);
+        
+        // Log pour debug si il y a un écart avec la mise à jour optimiste
+        console.log(`✅ Participants synchronized: ${actualCount}`);
+      } else {
+        setParticipantsCount(0);
+      }
+    } catch (error) {
+      console.error("Erreur comptage participants:", error);
+      // En cas d'erreur, on garde le compteur optimiste plutôt que de le remettre à 0
+      console.log("⚠️ Keeping optimistic count due to network error");
+    } finally {
+      if (showSyncIndicator) {
+        setTimeout(() => setIsSyncing(false), 500); // Délai pour voir l'indicateur
+      }
     }
   };
 
@@ -89,21 +210,163 @@ export default function EventDetailPage() {
 
     setRegistrationLoading(true);
     try {
-      // TODO: Implémenter l'inscription/désinscription
-      await new Promise(resolve => setTimeout(resolve, 1000)); // Simulation
-      
-      if (isRegistered) {
-        setIsRegistered(false);
-        setParticipantsCount(prev => prev - 1);
-        toast.success("Désinscription réussie");
-      } else {
-        setIsRegistered(true);
-        setParticipantsCount(prev => prev + 1);
-        toast.success("Inscription réussie !");
+      const token = localStorage.getItem('token');
+      if (!token) {
+        toast.error("Token non trouvé, veuillez vous reconnecter");
+        router.push("/connect");
+        return;
       }
-    } catch (error) {
-      toast.error("Erreur lors de l'inscription");
+
+      if (isRegistered) {
+        // Désinscription : trouver l'inscription et la supprimer
+        const inscriptionsResponse = await fetch("http://localhost:3000/api/inscriptions", {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+        });
+
+        if (inscriptionsResponse.ok) {
+          const inscriptions = await inscriptionsResponse.json();
+          const currentInscription = inscriptions.find(
+            (inscription: any) => inscription.evenement_id === parseInt(params.id as string)
+          );
+
+          if (currentInscription) {
+            const deleteResponse = await fetch(`http://localhost:3000/api/inscriptions/${currentInscription.id}`, {
+              method: 'DELETE',
+              headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json',
+              },
+            });
+
+            if (deleteResponse.ok) {
+              // Mise à jour immédiate des états
+              setIsRegistered(false);
+              
+              // Mise à jour optimiste du compteur (instantanée)
+              setParticipantsCount(prev => Math.max(0, prev - 1));
+              
+              // Rafraîchir les données en parallèle (pour synchroniser avec la BDD)
+              getParticipantsCount(false); // Sans await et sans indicateur visible
+              
+              // Animations de désinscription
+              animateCounter(false);
+              animateButton("success");
+              playNotificationSound("success");
+              
+              toast.success("👋 Désinscription réussie !", {
+                description: "Vous ne participez plus à cet événement",
+                duration: 3000,
+              });
+            } else {
+              throw new Error("Erreur lors de la désinscription");
+            }
+          }
+        }
+      } else {
+        // Vérification des places disponibles avant inscription
+        if (event?.nombre_max_participants && participantsCount >= event.nombre_max_participants) {
+          throw new Error("Événement complet ! Plus de places disponibles.");
+        }
+        
+        // Inscription : créer une nouvelle inscription
+        const response = await fetch("http://localhost:3000/api/inscriptions", {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            evenement_id: parseInt(params.id as string),
+            statut: 'confirmee',
+            message: null
+          }),
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          
+          // Vérifier si un paiement est requis
+          if (data.paiement) {
+            // Événement payant - paiement requis
+            toast.warning(
+              `💳 Paiement requis : ${data.paiement.montant}€`,
+              { 
+                description: "Votre inscription est en attente du paiement",
+                duration: 5000 
+              }
+            );
+            
+            // TODO: Implémenter l'interface de paiement (Stripe, PayPal, etc.)
+            // Pour l'instant, on simule un paiement réussi après 1 seconde (réduit de 3s à 1s)
+            setTimeout(async () => {
+                              try {
+                 // Mise à jour immédiate des états
+                  setIsRegistered(true);
+                 
+                 // Mise à jour optimiste du compteur (instantanée)
+                 setParticipantsCount(prev => prev + 1);
+                 
+                 // Rafraîchir les données en arrière-plan (pour synchroniser avec la BDD)
+                 getParticipantsCount(false); // Sans await et sans indicateur visible
+                 
+                 // Animations de succès pour paiement
+                 triggerConfetti();
+                 animateCounter(true);
+                 animateButton("success");
+                 playNotificationSound("success");
+                 
+                 toast.success("✅ Paiement accepté ! Inscription confirmée 🎉", {
+                   description: "Votre place est maintenant réservée",
+                   duration: 4000,
+                 });
+                 
+                 // Arrêter le loading après les animations
+                 setRegistrationLoading(false);
+               } catch (error) {
+                 console.error("Erreur post-paiement:", error);
+                 setRegistrationLoading(false);
+               }
+            }, 1000); // Réduit à 1 seconde
+            
+            // Ne pas exécuter setRegistrationLoading(false) dans finally pour les paiements
+            return;
+            
+          } else {
+            // Événement gratuit - inscription immédiate
+            setIsRegistered(true);
+            
+            // Mise à jour optimiste du compteur (instantanée)
+            setParticipantsCount(prev => prev + 1);
+            
+            // Rafraîchir les données en arrière-plan (pour synchroniser avec la BDD)
+            getParticipantsCount(false); // Sans await et sans indicateur visible
+            
+            // Animations de célébration pour événement gratuit
+            triggerConfetti();
+            animateCounter(true);
+            animateButton("success");
+            playNotificationSound("success");
+            
+            toast.success("🎉 Inscription gratuite réussie !", {
+              description: "Votre place est confirmée ! À bientôt 😊",
+              duration: 4000,
+            });
+          }
+        } else {
+          const errorData = await response.json();
+          throw new Error(errorData.message || "Erreur lors de l'inscription");
+        }
+      }
+    } catch (error: any) {
+      console.error("Erreur inscription:", error);
+      animateButton("error");
+      playNotificationSound("error");
+      toast.error(error.message || "Erreur lors de l'inscription");
     } finally {
+      // Seulement pour les événements gratuits et les erreurs
       setRegistrationLoading(false);
     }
   };
@@ -181,7 +444,42 @@ export default function EventDetailPage() {
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background relative">
+      {/* Effet confetti */}
+      {showConfetti && (
+        <div className="fixed inset-0 pointer-events-none z-50 overflow-hidden">
+          {[...Array(50)].map((_, i) => (
+            <div
+              key={i}
+              className={`absolute w-3 h-3 animate-confetti`}
+              style={{
+                left: `${Math.random() * 100}%`,
+                top: `-20px`,
+                backgroundColor: ['#ff6b6b', '#4ecdc4', '#45b7d1', '#96ceb4', '#ffeaa7', '#dda0dd', '#ff8a80', '#81c784'][Math.floor(Math.random() * 8)],
+                animationDelay: `${Math.random() * 1}s`,
+                borderRadius: Math.random() > 0.5 ? '50%' : '0%',
+              }}
+            />
+          ))}
+          
+          {/* Étoiles scintillantes */}
+          {[...Array(20)].map((_, i) => (
+            <div
+              key={`star-${i}`}
+              className="absolute text-yellow-400 animate-pulse"
+              style={{
+                left: `${Math.random() * 100}%`,
+                top: `${Math.random() * 100}%`,
+                fontSize: `${Math.random() * 20 + 10}px`,
+                animationDelay: `${Math.random() * 2}s`,
+              }}
+            >
+              ⭐
+            </div>
+          ))}
+        </div>
+      )}
+      
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Breadcrumb */}
         <div className="mb-6">
@@ -283,9 +581,12 @@ export default function EventDetailPage() {
                     <Users className="h-4 w-4 mr-3 text-primary" />
                     <div>
                       <p className="font-medium">Participants</p>
-                      <p className="text-muted-foreground">
-                        {participantsCount} participant(s) inscrit(s)
+                      <p className={`text-muted-foreground transition-all duration-300 ${counterAnimation}`}>
+                        <span className="font-semibold text-primary">{participantsCount}</span> participant(s) inscrit(s)
                         {event.nombre_max_participants && ` / ${event.nombre_max_participants}`}
+                        {isSyncing && (
+                          <span className="ml-2 text-xs animate-pulse">🔄</span>
+                        )}
                       </p>
                     </div>
                   </div>
@@ -315,21 +616,43 @@ export default function EventDetailPage() {
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
+                {/* Prix en évidence */}
+                <div className="text-center p-4 bg-muted/50 rounded-lg border">
+                  {event.prix > 0 ? (
+                    <div>
+                      <p className="text-2xl font-bold text-foreground">{event.prix}€</p>
+                      <p className="text-sm text-muted-foreground">par participant</p>
+                    </div>
+                  ) : (
+                    <div>
+                      <p className="text-2xl font-bold text-green-600">GRATUIT</p>
+                      <p className="text-sm text-muted-foreground">inscription libre</p>
+                    </div>
+                  )}
+                </div>
+
                 <div className="text-sm text-muted-foreground">
                   {isEventFull ? (
-                    <p className="text-red-500 font-medium">
-                      Événement complet ({event.nombre_max_participants} places)
+                    <p className="text-red-500 font-medium animate-pulse">
+                      🚫 Événement complet ({event.nombre_max_participants} places)
                     </p>
                   ) : (
-                    <p>
-                      {participantsCount} participant(s) inscrit(s)
+                    <p className={`transition-all duration-300 ${counterAnimation}`}>
+                      <span className="font-semibold text-primary">{participantsCount}</span> participant(s) inscrit(s)
                       {event.nombre_max_participants && ` sur ${event.nombre_max_participants} places`}
+                      {isSyncing && (
+                        <span className="ml-2 text-xs animate-pulse">🔄</span>
+                      )}
                     </p>
                   )}
                 </div>
 
                 <Button
-                  className="w-full"
+                  className={`w-full transition-all duration-300 ${buttonAnimation} ${
+                    isRegistered 
+                      ? "bg-green-600 hover:bg-green-700 border-green-600" 
+                      : ""
+                  }`}
                   onClick={handleRegistration}
                   disabled={(!isRegistered && isEventFull) || registrationLoading}
                   variant={isRegistered ? "outline" : "default"}
@@ -340,17 +663,28 @@ export default function EventDetailPage() {
                       Chargement...
                     </>
                   ) : isRegistered ? (
-                    "Se désinscrire"
+                    <>
+                      <span className="mr-2">✅</span>
+                      Se désinscrire
+                    </>
                   ) : isEventFull ? (
-                    "Complet"
+                    <>
+                      <span className="mr-2">🚫</span>
+                      Complet
+                    </>
                   ) : (
-                    "S'inscrire"
+                    <>
+                      <span className="mr-2">🎯</span>
+                      S'inscrire
+                    </>
                   )}
                 </Button>
 
-                <p className="text-xs text-muted-foreground text-center">
-                  {event.prix > 0 ? `Participation : ${event.prix}€` : "Inscription gratuite"}
-                </p>
+                {event.prix > 0 && (
+                  <p className="text-xs text-muted-foreground text-center">
+                    💳 Paiement sécurisé requis
+                  </p>
+                )}
               </CardContent>
             </Card>
 
