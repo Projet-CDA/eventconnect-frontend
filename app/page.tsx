@@ -30,12 +30,12 @@ import { HERO_CATEGORIES } from "@/lib/constants";
 export default function Home() {
   // Mapping des icônes pour les catégories
   const iconMap = {
-    Code,
-    Palette,
-    Heart,
-    Briefcase,
-    Music,
-    Dumbbell,
+    Code: Code,
+    Palette: Palette,
+    Heart: Heart,
+    Briefcase: Briefcase,
+    Music: Music,
+    Dumbbell: Dumbbell,
   };
   const featuredEvents = [
     {
@@ -108,8 +108,6 @@ export default function Home() {
       gradient: "from-green-500 to-emerald-500",
     },
   ];
-
-
 
   const testimonials = [
     {
@@ -374,7 +372,8 @@ export default function Home() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {HERO_CATEGORIES.map((category, index) => {
-              const IconComponent = iconMap[category.icon as keyof typeof iconMap];
+              const IconComponent =
+                iconMap[category.icon as keyof typeof iconMap] || Code;
               return (
                 <Card
                   key={index}
@@ -383,10 +382,8 @@ export default function Home() {
                 >
                   <CardContent className="p-0">
                     <div className="flex items-center space-x-4">
-                      <div
-                        className={`p-3 rounded-xl bg-gradient-to-r ${category.color} shadow-lg`}
-                      >
-                        <IconComponent className="h-6 w-6 text-white" />
+                      <div className="p-3 rounded-xl shadow-lg bg-transparent">
+                        <IconComponent className="h-6 w-6 text-primary dark:text-white" />
                       </div>
                       <div>
                         <h3 className="font-semibold text-foreground text-lg">
