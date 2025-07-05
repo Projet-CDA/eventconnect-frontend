@@ -196,44 +196,22 @@ export default function RegistrationPage() {
     setLoading(true);
 
     try {
-      // Inscription via l'API backend
-      const registerResponse = await fetch("http://localhost:3000/api/utilisateurs/register", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          nom: `${formData.firstName} ${formData.lastName}`,
-          email: formData.email,
-          mot_de_passe: formData.password,
-        }),
+      // Inscription via le service d'authentification
+      const { registerUser, loginUser } = await import("@/lib/services/authService");
+      
+      const registerData = await registerUser({
+        nom: `${formData.firstName} ${formData.lastName}`,
+        email: formData.email,
+        mot_de_passe: formData.password,
       });
-
-      const registerData = await registerResponse.json();
-
-      if (!registerResponse.ok) {
-        throw new Error(registerData.message || "Erreur lors de l'inscription");
-      }
 
       toast.success("Inscription réussie ! Connexion automatique...");
 
       // Connexion automatique après inscription
-      const loginResponse = await fetch("http://localhost:3000/api/utilisateurs/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          email: formData.email,
-          mot_de_passe: formData.password,
-        }),
+      const loginData = await loginUser({
+        email: formData.email,
+        mot_de_passe: formData.password,
       });
-
-      const loginData = await loginResponse.json();
-
-      if (!loginResponse.ok) {
-        throw new Error("Inscription réussie mais erreur de connexion");
-      }
 
       // Sauvegarder le token et les données utilisateur
       login(loginData.token, {
@@ -246,7 +224,6 @@ export default function RegistrationPage() {
 
       // Redirection vers la page des événements
       router.push("/events");
-      // router.push('/dashboard');
     } catch (error: any) {
       console.error("Erreur lors de l'inscription:", error);
       toast.error(error.message || "Erreur lors de l'inscription. Veuillez réessayer.");

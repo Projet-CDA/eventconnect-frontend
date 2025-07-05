@@ -25,8 +25,18 @@ import {
   Zap,
   Globe,
 } from "lucide-react";
+import { HERO_CATEGORIES } from "@/lib/constants";
 
 export default function Home() {
+  // Mapping des icônes pour les catégories
+  const iconMap = {
+    Code,
+    Palette,
+    Heart,
+    Briefcase,
+    Music,
+    Dumbbell,
+  };
   const featuredEvents = [
     {
       id: 1,
@@ -99,44 +109,7 @@ export default function Home() {
     },
   ];
 
-  const categories = [
-    {
-      name: "Technologie",
-      count: 24,
-      icon: Code,
-      color: "from-blue-500 to-blue-600",
-    },
-    {
-      name: "Art & Culture",
-      count: 18,
-      icon: Palette,
-      color: "from-purple-500 to-purple-600",
-    },
-    {
-      name: "Santé & Bien-être",
-      count: 15,
-      icon: Heart,
-      color: "from-green-500 to-green-600",
-    },
-    {
-      name: "Business & Entrepreneuriat",
-      count: 32,
-      icon: Briefcase,
-      color: "from-orange-500 to-orange-600",
-    },
-    {
-      name: "Musique & Divertissement",
-      count: 21,
-      icon: Music,
-      color: "from-pink-500 to-pink-600",
-    },
-    {
-      name: "Sports & Fitness",
-      count: 19,
-      icon: Dumbbell,
-      color: "from-red-500 to-red-600",
-    },
-  ];
+
 
   const testimonials = [
     {
@@ -400,31 +373,34 @@ export default function Home() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {categories.map((category, index) => (
-              <Card
-                key={index}
-                className="p-6 hover:scale-105 transition-all duration-300 border-border/50 shadow-lg bg-card/50 backdrop-blur-sm animate-slide-up"
-                style={{ animationDelay: `${index * 0.1}s` }}
-              >
-                <CardContent className="p-0">
-                  <div className="flex items-center space-x-4">
-                    <div
-                      className={`p-3 rounded-xl bg-gradient-to-r ${category.color} shadow-lg`}
-                    >
-                      <category.icon className="h-6 w-6 text-white" />
+            {HERO_CATEGORIES.map((category, index) => {
+              const IconComponent = iconMap[category.icon as keyof typeof iconMap];
+              return (
+                <Card
+                  key={index}
+                  className="p-6 hover:scale-105 transition-all duration-300 border-border/50 shadow-lg bg-card/50 backdrop-blur-sm animate-slide-up"
+                  style={{ animationDelay: `${index * 0.1}s` }}
+                >
+                  <CardContent className="p-0">
+                    <div className="flex items-center space-x-4">
+                      <div
+                        className={`p-3 rounded-xl bg-gradient-to-r ${category.color} shadow-lg`}
+                      >
+                        <IconComponent className="h-6 w-6 text-white" />
+                      </div>
+                      <div>
+                        <h3 className="font-semibold text-foreground text-lg">
+                          {category.name}
+                        </h3>
+                        <p className="text-muted-foreground">
+                          {category.count} événements
+                        </p>
+                      </div>
                     </div>
-                    <div>
-                      <h3 className="font-semibold text-foreground text-lg">
-                        {category.name}
-                      </h3>
-                      <p className="text-muted-foreground">
-                        {category.count} événements
-                      </p>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
+                  </CardContent>
+                </Card>
+              );
+            })}
           </div>
         </div>
       </section>

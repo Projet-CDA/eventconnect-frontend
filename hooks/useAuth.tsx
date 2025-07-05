@@ -41,27 +41,38 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       const userData = localStorage.getItem("user");
 
       if (token && userData) {
-        setUser(JSON.parse(userData));
+        const parsedUser = JSON.parse(userData);
+        setUser(parsedUser);
       }
     } catch (error) {
       console.error("Error checking auth status:", error);
       localStorage.removeItem("token");
       localStorage.removeItem("user");
+      setUser(null);
     } finally {
       setIsLoading(false);
     }
   };
 
   const login = (token: string, userData: User) => {
-    localStorage.setItem("token", token);
-    localStorage.setItem("user", JSON.stringify(userData));
-    setUser(userData);
+    try {
+      localStorage.setItem("token", token);
+      localStorage.setItem("user", JSON.stringify(userData));
+      setUser(userData);
+    } catch (error) {
+      console.error("Error during login:", error);
+      throw error;
+    }
   };
 
   const logout = () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("user");
-    setUser(null);
+    try {
+      localStorage.removeItem("token");
+      localStorage.removeItem("user");
+      setUser(null);
+    } catch (error) {
+      console.error("Error during logout:", error);
+    }
   };
 
   const value = {
@@ -76,47 +87,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 };
 
 export const useAuthCheck = () => {
-  const [user, setUser] = useState<User | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-
-  useEffect(() => {
-    checkAuthStatus();
-  }, []);
-
-  const checkAuthStatus = () => {
-    try {
-      const token = localStorage.getItem("token");
-      const userData = localStorage.getItem("user");
-
-      if (token && userData) {
-        setUser(JSON.parse(userData));
-      }
-    } catch (error) {
-      console.error("Error checking auth status:", error);
-      localStorage.removeItem("token");
-      localStorage.removeItem("user");
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const login = (token: string, userData: User) => {
-    localStorage.setItem("token", token);
-    localStorage.setItem("user", JSON.stringify(userData));
-    setUser(userData);
-  };
-
-  const logout = () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("user");
-    setUser(null);
-  };
-
-  return {
-    user,
-    isAuthenticated: !!user,
-    login,
-    logout,
-    isLoading,
-  };
+  const auth = useAuth();
+  return auth;
 };

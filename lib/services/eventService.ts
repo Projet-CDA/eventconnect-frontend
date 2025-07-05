@@ -1,7 +1,9 @@
+import { EventCreateData, BackendEvent } from "@/lib/types";
+
 const API_BASE_URL = "http://localhost:3000/api";
 
 // Récupérer tous les événements
-export const getAllEvents = async () => {
+export const getAllEvents = async (): Promise<BackendEvent[]> => {
   try {
     const response = await fetch(`${API_BASE_URL}/evenements`, {
       method: "GET",
@@ -22,7 +24,9 @@ export const getAllEvents = async () => {
 };
 
 // Récupérer un événement par ID
-export const getEventById = async (id) => {
+export const getEventById = async (
+  id: string | number
+): Promise<BackendEvent> => {
   try {
     const response = await fetch(`${API_BASE_URL}/evenements/${id}`, {
       method: "GET",
@@ -43,20 +47,25 @@ export const getEventById = async (id) => {
 };
 
 // Créer un événement
-export const createEvent = async (eventData) => {
+export const createEvent = async (
+  eventData: EventCreateData
+): Promise<BackendEvent> => {
   try {
     const token = localStorage.getItem("token");
     const response = await fetch(`${API_BASE_URL}/evenements`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
+        ...(token && { Authorization: `Bearer ${token}` }),
       },
       body: JSON.stringify(eventData),
     });
 
     if (!response.ok) {
-      throw new Error("Erreur lors de la création de l'événement");
+      const errorData = await response.json();
+      throw new Error(
+        errorData.message || "Erreur lors de la création de l'événement"
+      );
     }
 
     return await response.json();
@@ -67,20 +76,26 @@ export const createEvent = async (eventData) => {
 };
 
 // Modifier un événement
-export const updateEvent = async (id, eventData) => {
+export const updateEvent = async (
+  id: string | number,
+  eventData: Partial<EventCreateData>
+): Promise<BackendEvent> => {
   try {
     const token = localStorage.getItem("token");
     const response = await fetch(`${API_BASE_URL}/evenements/${id}`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
+        ...(token && { Authorization: `Bearer ${token}` }),
       },
       body: JSON.stringify(eventData),
     });
 
     if (!response.ok) {
-      throw new Error("Erreur lors de la modification de l'événement");
+      const errorData = await response.json();
+      throw new Error(
+        errorData.message || "Erreur lors de la modification de l'événement"
+      );
     }
 
     return await response.json();
@@ -91,19 +106,22 @@ export const updateEvent = async (id, eventData) => {
 };
 
 // Supprimer un événement
-export const deleteEvent = async (id) => {
+export const deleteEvent = async (id: string | number): Promise<boolean> => {
   try {
     const token = localStorage.getItem("token");
     const response = await fetch(`${API_BASE_URL}/evenements/${id}`, {
       method: "DELETE",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
+        ...(token && { Authorization: `Bearer ${token}` }),
       },
     });
 
     if (!response.ok) {
-      throw new Error("Erreur lors de la suppression de l'événement");
+      const errorData = await response.json();
+      throw new Error(
+        errorData.message || "Erreur lors de la suppression de l'événement"
+      );
     }
 
     return true;
