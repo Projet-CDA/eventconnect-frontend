@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useEffect, useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -28,6 +29,11 @@ import {
 import { HERO_CATEGORIES } from "@/lib/constants";
 
 export default function Home() {
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
   // Mapping des icônes pour les catégories
   const iconMap = {
     Code: Code,
@@ -383,7 +389,9 @@ export default function Home() {
                   <CardContent className="p-0">
                     <div className="flex items-center space-x-4">
                       <div className="p-3 rounded-xl shadow-lg bg-transparent">
-                        <IconComponent className="h-6 w-6 text-primary dark:text-white" />
+                        {mounted && (
+                          <IconComponent className="h-6 w-6 text-primary dark:text-white" />
+                        )}
                       </div>
                       <div>
                         <h3 className="font-semibold text-foreground text-lg">

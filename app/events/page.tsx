@@ -532,7 +532,9 @@ export default function EventsPage() {
         heure = event.date_et_heure.substring(11, 16);
       } else {
         date = event.date_et_heure ? event.date_et_heure.substring(0, 10) : "";
-        heure = event.date_et_heure ? event.date_et_heure.substring(11, 16) : "";
+        heure = event.date_et_heure
+          ? event.date_et_heure.substring(11, 16)
+          : "";
       }
       setFormData({
         nom: event.nom || "",
@@ -1060,14 +1062,12 @@ export default function EventsPage() {
                 </p>
               </div>
               {isAuthenticated && (
-                <Button
-                  onClick={() => router.push("/events?action=create")}
-                  className="flex items-center gap-2"
-                  size="lg"
-                >
-                  <Plus className="h-4 w-4" />
-                  Créer un événement
-                </Button>
+                <CreateEventModal onEventCreated={fetchEvents}>
+                  <Button className="flex items-center gap-2" size="lg">
+                    <Plus className="h-4 w-4" />
+                    Créer un événement
+                  </Button>
+                </CreateEventModal>
               )}
             </div>
 
@@ -1114,7 +1114,10 @@ export default function EventsPage() {
                               Toutes les catégories
                             </SelectItem>
                             {FILTER_CATEGORIES.map((category) => (
-                              <SelectItem key={category.value} value={category.value}>  
+                              <SelectItem
+                                key={category.value}
+                                value={category.value}
+                              >
                                 {category.label}
                               </SelectItem>
                             ))}
@@ -1179,15 +1182,6 @@ export default function EventsPage() {
                   ? "Essayez de modifier vos critères de recherche"
                   : "Soyez le premier à créer un événement !"}
               </p>
-              {isAuthenticated && (
-                <Button
-                  onClick={() => router.push("/events?action=create")}
-                  className="flex items-center gap-2"
-                >
-                  <Plus className="h-4 w-4" />
-                  Créer un événement
-                </Button>
-              )}
             </div>
           ) : (
             <div

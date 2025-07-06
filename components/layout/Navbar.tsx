@@ -32,6 +32,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useAuth } from "@/hooks/useAuth";
+import { toast } from "sonner";
 
 export function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -84,6 +85,7 @@ export function Navbar() {
   // Gérer la déconnexion
   const handleLogout = () => {
     logout();
+    toast.success("Vous êtes bien déconnecté");
     closeMobileMenu();
   };
 
@@ -595,4 +597,3 @@ export function Navbar() {
     </>
   );
 }
-
