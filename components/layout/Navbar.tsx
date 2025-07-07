@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import {
   Menu,
@@ -17,13 +17,30 @@ import {
   Plus,
   Search,
   Bell,
+  User,
+  LogOut,
+  Settings,
+  Heart,
 } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { useAuthCheck } from "@/hooks/useAuth";
+import { toast } from "sonner";
 
 export function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [darkMode, setDarkMode] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const pathname = usePathname();
+  const router = useRouter();
+  const { user, isAuthenticated, logout, refreshAuth } = useAuthCheck();
 
   // Gérer le scroll pour navbar transparente
   useEffect(() => {
@@ -66,6 +83,32 @@ export function Navbar() {
     setMobileMenuOpen(false);
   };
 
+  // Gérer la déconnexion
+  const handleLogout = async () => {
+    try {
+      // Fermer le menu mobile
+      closeMobileMenu();
+      
+      // Déconnexion
+      logout();
+      
+      // Forcer la mise à jour de l'authentification
+      refreshAuth();
+      
+      // Notification de succès
+      toast.success("Vous êtes bien déconnecté");
+      
+      // Redirection vers la page d'accueil après un court délai
+      setTimeout(() => {
+        router.push("/");
+      }, 1000);
+      
+    } catch (error) {
+      console.error("Erreur lors de la déconnexion:", error);
+      toast.error("Erreur lors de la déconnexion");
+    }
+  };
+
   const navLinks = [
     { href: "/", label: "Accueil", icon: Home },
     { href: "/events", label: "Événements", icon: MapPin },
@@ -77,8 +120,12 @@ export function Navbar() {
   const bottomNavLinks = [
     { href: "/", label: "Accueil", icon: Home },
     { href: "/events", label: "Événements", icon: Search },
-    { href: "/registration", label: "Créer", icon: Plus },
-    { href: "/connect", label: "Compte", icon: Users },
+    { href: "/events/create", label: "Créer", icon: Plus },
+    {
+      href: isAuthenticated ? "/profile" : "/connect",
+      label: "Compte",
+      icon: isAuthenticated ? User : Users,
+    },
   ];
 
   const isActive = (href: string) => {
@@ -86,6 +133,17 @@ export function Navbar() {
       return pathname === "/";
     }
     return pathname.startsWith(href);
+  };
+
+  // Obtenir les initiales de l'utilisateur
+  const getUserInitials = () => {
+    if (!user?.nom) return "U";
+    return user.nom
+      .split(" ")
+      .map((n) => n[0])
+      .join("")
+      .toUpperCase()
+      .slice(0, 2);
   };
 
   return (
@@ -187,27 +245,86 @@ export function Navbar() {
                 )}
               </Button>
 
-              <Button
-                variant="ghost"
-                className={`font-medium px-6 py-2 rounded-lg transition-all duration-200 ${
-                  scrolled
-                    ? "text-foreground/80 hover:text-foreground hover:bg-muted/50"
-                    : "text-white/90 hover:text-white hover:bg-white/10"
-                }`}
-                asChild
-              >
-                <Link href="/connect">Se connecter</Link>
-              </Button>
-              <Button
-                className={`font-semibold px-6 py-2 rounded-lg shadow-lg hover:shadow-xl transition-all duration-200 ${
-                  scrolled
-                    ? "bg-primary hover:bg-primary/90 text-primary-foreground"
-                    : "bg-white text-primary hover:bg-gray-100"
-                }`}
-                asChild
-              >
-                <Link href="/registration">S'inscrire</Link>
-              </Button>
+              {/* Menu profil utilisateur connecté */}
+              {isAuthenticated ? (
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button
+                      variant="ghost"
+                      className={`p-2 rounded-full transition-all duration-200 ${
+                        scrolled ? "hover:bg-muted/50" : "hover:bg-white/10"
+                      }`}
+                    >
+                      <Avatar className="h-8 w-8 border-2 border-white shadow-sm">
+                        <AvatarImage src="" alt={user?.nom || "Utilisateur"} />
+                        <AvatarFallback className="bg-primary text-white font-semibold">
+                          {getUserInitials()}
+                        </AvatarFallback>
+                      </Avatar>
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end" className="w-56">
+                    <DropdownMenuLabel>
+                      <div className="flex flex-col space-y-1">
+                        <p className="text-sm font-medium leading-none">
+                          {user?.nom}
+                        </p>
+                        <p className="text-xs leading-none text-muted-foreground">
+                          {user?.email}
+                        </p>
+                      </div>
+                    </DropdownMenuLabel>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem asChild>
+                      <Link href="/profile" className="cursor-pointer">
+                        <User className="mr-2 h-4 w-4" />
+                        Mon profil
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem asChild>
+                      <Link href="/events/create" className="cursor-pointer">
+                        <Plus className="mr-2 h-4 w-4" />
+                        Créer un événement
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem asChild>
+                      <Link href="/favorites" className="cursor-pointer">
+                        <Heart className="mr-2 h-4 w-4" />
+                        Mes favoris
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem asChild>
+                      <Link href="/settings" className="cursor-pointer">
+                        <Settings className="mr-2 h-4 w-4" />
+                        Paramètres
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem
+                      onClick={handleLogout}
+                      className="cursor-pointer text-red-600 focus:text-red-600"
+                    >
+                      <LogOut className="mr-2 h-4 w-4" />
+                      Se déconnecter
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              ) : (
+                // Boutons de connexion/inscription pour utilisateurs non connectés
+                <>
+                  <Button
+                    variant="ghost"
+                    className={`font-medium px-6 py-2 rounded-lg transition-all duration-200 ${
+                      scrolled
+                        ? "bg-primary hover:bg-primary/90 text-primary-foreground"
+                        : "bg-white text-primary hover:bg-gray-100"
+                    }`}
+                    asChild
+                  >
+                    <Link href="/connect">Se connecter</Link>
+                  </Button>
+                </>
+              )}
             </div>
 
             {/* Actions mobiles - seulement pour tablet (md) */}
@@ -306,6 +423,26 @@ export function Navbar() {
           }`}
         >
           <div className="p-6 h-full flex flex-col">
+            {/* Profil utilisateur connecté */}
+            {isAuthenticated && (
+              <div className="mb-6 p-4 bg-muted/50 rounded-xl">
+                <div className="flex items-center space-x-3">
+                  <Avatar className="h-12 w-12 border-2 border-white shadow-sm">
+                    <AvatarImage src="" alt={user?.nom || "Utilisateur"} />
+                    <AvatarFallback className="bg-primary text-white font-semibold">
+                      {getUserInitials()}
+                    </AvatarFallback>
+                  </Avatar>
+                  <div className="flex-1">
+                    <p className="font-semibold text-foreground">{user?.nom}</p>
+                    <p className="text-sm text-muted-foreground">
+                      {user?.email}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            )}
+
             {/* Navigation links */}
             <div className="space-y-2 mb-8">
               {navLinks.map((link) => (
@@ -331,28 +468,79 @@ export function Navbar() {
                   <span className="text-lg font-medium">{link.label}</span>
                 </Link>
               ))}
+
+              {/* Liens supplémentaires pour utilisateurs connectés */}
+              {isAuthenticated && (
+                <>
+                  <Link
+                    href="/profile"
+                    className="flex items-center space-x-4 px-4 py-4 rounded-xl transition-all duration-200 group text-foreground hover:bg-muted/50"
+                    onClick={closeMobileMenu}
+                  >
+                    <div className="p-2 rounded-lg bg-primary/10 group-hover:bg-primary/20">
+                      <User className="h-5 w-5 text-primary" />
+                    </div>
+                    <span className="text-lg font-medium">Mon profil</span>
+                  </Link>
+                  <Link
+                    href="/events/create"
+                    className="flex items-center space-x-4 px-4 py-4 rounded-xl transition-all duration-200 group text-foreground hover:bg-muted/50"
+                    onClick={closeMobileMenu}
+                  >
+                    <div className="p-2 rounded-lg bg-primary/10 group-hover:bg-primary/20">
+                      <Plus className="h-5 w-5 text-primary" />
+                    </div>
+                    <span className="text-lg font-medium">
+                      Créer un événement
+                    </span>
+                  </Link>
+                  <Link
+                    href="/favorites"
+                    className="flex items-center space-x-4 px-4 py-4 rounded-xl transition-all duration-200 group text-foreground hover:bg-muted/50"
+                    onClick={closeMobileMenu}
+                  >
+                    <div className="p-2 rounded-lg bg-primary/10 group-hover:bg-primary/20">
+                      <Heart className="h-5 w-5 text-primary" />
+                    </div>
+                    <span className="text-lg font-medium">Mes favoris</span>
+                  </Link>
+                </>
+              )}
             </div>
 
             {/* Actions utilisateur */}
             <div className="mt-auto border-t border-border pt-6 space-y-3">
-              <Button
-                className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-semibold py-3 rounded-xl"
-                asChild
-              >
-                <Link href="/registration" onClick={closeMobileMenu}>
-                  <Plus className="h-5 w-5 mr-2" />
-                  Créer un compte gratuit
-                </Link>
-              </Button>
-              <Button
-                variant="outline"
-                className="w-full border-2 font-semibold py-3 rounded-xl"
-                asChild
-              >
-                <Link href="/connect" onClick={closeMobileMenu}>
-                  Se connecter
-                </Link>
-              </Button>
+              {isAuthenticated ? (
+                <Button
+                  variant="outline"
+                  className="w-full border-2 font-semibold py-3 rounded-xl text-red-600 border-red-200 hover:bg-red-50"
+                  onClick={handleLogout}
+                >
+                  <LogOut className="h-5 w-5 mr-2" />
+                  Se déconnecter
+                </Button>
+              ) : (
+                <>
+                  <Button
+                    className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-semibold py-3 rounded-xl"
+                    asChild
+                  >
+                    <Link href="/registration" onClick={closeMobileMenu}>
+                      <Plus className="h-5 w-5 mr-2" />
+                      Créer un compte gratuit
+                    </Link>
+                  </Button>
+                  <Button
+                    variant="outline"
+                    className="w-full border-2 font-semibold py-3 rounded-xl"
+                    asChild
+                  >
+                    <Link href="/connect" onClick={closeMobileMenu}>
+                      Se connecter
+                    </Link>
+                  </Button>
+                </>
+              )}
             </div>
           </div>
         </div>
@@ -392,7 +580,7 @@ export function Navbar() {
                       />
 
                       {/* Badge pour le bouton "Créer" */}
-                      {link.href === "/registration" && (
+                      {link.href === "/events/create" && (
                         <div className="absolute -top-1 -right-1 w-2 h-2 bg-primary rounded-full animate-pulse" />
                       )}
                     </div>
