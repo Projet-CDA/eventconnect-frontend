@@ -338,7 +338,7 @@ export default function Home() {
                     className="w-full bg-primary hover:bg-primary/90 text-primary-foreground transition-all duration-300"
                     asChild
                   >
-                    <Link href={`/events/${event.id}`}>Voir les détails</Link>
+                    <Link href={`/`}>Voir les détails</Link>
                   </Button>
                 </CardContent>
               </Card>
