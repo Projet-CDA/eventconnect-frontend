@@ -33,6 +33,28 @@ export const useAuthCheck = () => {
 
   useEffect(() => {
     checkAuthStatus();
+
+    // Écouteur pour les changements de localStorage (entre onglets)
+    const handleStorageChange = (e: StorageEvent) => {
+      if (e.key === "user" || e.key === "token") {
+        checkAuthStatus();
+      }
+    };
+
+    // Écouteur pour les changements d'authentification personnalisés
+    const handleAuthChange = () => {
+      checkAuthStatus();
+    };
+
+    // Ajouter les écouteurs
+    window.addEventListener("storage", handleStorageChange);
+    window.addEventListener("authChange", handleAuthChange);
+
+    // Nettoyer les écouteurs au démontage
+    return () => {
+      window.removeEventListener("storage", handleStorageChange);
+      window.removeEventListener("authChange", handleAuthChange);
+    };
   }, []);
 
   const checkAuthStatus = () => {
@@ -42,11 +64,14 @@ export const useAuthCheck = () => {
 
       if (token && userData) {
         setUser(JSON.parse(userData));
+      } else {
+        setUser(null);
       }
     } catch (error) {
       console.error("Error checking auth status:", error);
       localStorage.removeItem("token");
       localStorage.removeItem("user");
+      setUser(null);
     } finally {
       setIsLoading(false);
     }
@@ -56,12 +81,18 @@ export const useAuthCheck = () => {
     localStorage.setItem("token", token);
     localStorage.setItem("user", JSON.stringify(userData));
     setUser(userData);
+    
+    // Déclencher un événement personnalisé pour notifier les autres composants
+    window.dispatchEvent(new Event("authChange"));
   };
 
   const logout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("user");
     setUser(null);
+    
+    // Déclencher un événement personnalisé pour notifier les autres composants
+    window.dispatchEvent(new Event("authChange"));
   };
 
   return {
@@ -70,5 +101,11 @@ export const useAuthCheck = () => {
     login,
     logout,
     isLoading,
+    refreshAuth: checkAuthStatus, // Fonction pour forcer une mise à jour
   };
+};
+
+// Fonction utilitaire pour déclencher une mise à jour d'authentification depuis n'importe où
+export const triggerAuthRefresh = () => {
+  window.dispatchEvent(new Event("authChange"));
 };

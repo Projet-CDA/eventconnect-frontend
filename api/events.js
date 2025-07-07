@@ -1,9 +1,11 @@
-const API_BASE_URL = "http://localhost:3000/api";
+const API_URL =
+  process.env.NEXT_PUBLIC_API_URL ||
+  "https://eventconnectes-backend.pphilibert-web.eu/api";
 
 // Récupérer tous les événements
 export const getAllEvents = async () => {
   try {
-    const response = await fetch(`${API_BASE_URL}/evenements`, {
+    const response = await fetch(`${API_URL}/evenements`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -24,7 +26,7 @@ export const getAllEvents = async () => {
 // Récupérer un événement par ID
 export const getEventById = async (id) => {
   try {
-    const response = await fetch(`${API_BASE_URL}/evenements/${id}`, {
+    const response = await fetch(`${API_URL}/evenements/${id}`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -46,7 +48,7 @@ export const getEventById = async (id) => {
 export const createEvent = async (eventData) => {
   try {
     const token = localStorage.getItem("token");
-    const response = await fetch(`${API_BASE_URL}/evenements`, {
+    const response = await fetch(`${API_URL}/evenements`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -70,7 +72,7 @@ export const createEvent = async (eventData) => {
 export const updateEvent = async (id, eventData) => {
   try {
     const token = localStorage.getItem("token");
-    const response = await fetch(`${API_BASE_URL}/evenements/${id}`, {
+    const response = await fetch(`${API_URL}/evenements/${id}`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
@@ -94,7 +96,7 @@ export const updateEvent = async (id, eventData) => {
 export const deleteEvent = async (id) => {
   try {
     const token = localStorage.getItem("token");
-    const response = await fetch(`${API_BASE_URL}/evenements/${id}`, {
+    const response = await fetch(`${API_URL}/evenements/${id}`, {
       method: "DELETE",
       headers: {
         "Content-Type": "application/json",

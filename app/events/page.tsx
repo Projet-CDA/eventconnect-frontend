@@ -43,6 +43,7 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
+import { getFavorites, addFavorite, removeFavorite } from "@/api/favorites";
 
 interface Event {
   id: string;
@@ -87,11 +88,19 @@ export default function EventsListPage() {
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [sortBy, setSortBy] = useState("date");
   const [showFilters, setShowFilters] = useState(false);
+  const [favoriteList, setFavoriteList] = useState<any[]>([]);
   const [favoriteEvents, setFavoriteEvents] = useState<string[]>([]);
   const { isAuthenticated, isLoading: authLoading } = useAuthCheck();
 
   useEffect(() => {
     fetchEvents();
+    // Charger les favoris de l'utilisateur
+    getFavorites()
+      .then((favs) => {
+        setFavoriteList(favs);
+        setFavoriteEvents(favs.map((f: any) => f.evenement_id?.toString()));
+      })
+      .catch(() => setFavoriteList([]));
   }, []);
 
   // Nouvelle fonction pour mapper les données backend vers le format frontend
@@ -119,7 +128,9 @@ export default function EventsListPage() {
   const fetchEvents = async () => {
     try {
       setLoading(true);
-      const response = await fetch("http://localhost:3000/api/evenements");
+      const response = await fetch(
+        "https://eventconnectes-backend.pphilibert-web.eu/api/evenements"
+      );
       const data = await response.json();
       if (Array.isArray(data)) {
         setEvents(data.map(mapBackendEvent));
@@ -208,17 +219,27 @@ export default function EventsListPage() {
     }
   };
 
-  const toggleFavorite = (eventId: string) => {
-    setFavoriteEvents((prev) =>
-      prev.includes(eventId)
-        ? prev.filter((id) => id !== eventId)
-        : [...prev, eventId]
+  const toggleFavorite = async (eventId: string) => {
+    const fav = favoriteList.find(
+      (f: any) => f.evenement_id?.toString() === eventId
     );
-    toast.success(
-      favoriteEvents.includes(eventId)
-        ? "Retiré des favoris"
-        : "Ajouté aux favoris"
-    );
+    try {
+      if (fav) {
+        await removeFavorite(fav.id);
+        setFavoriteList((prev) =>
+          prev.filter((f: any) => f.evenement_id?.toString() !== eventId)
+        );
+        setFavoriteEvents((prev) => prev.filter((id) => id !== eventId));
+        toast.success("Retiré des favoris");
+      } else {
+        const newFav = await addFavorite(eventId);
+        setFavoriteList((prev) => [...prev, newFav]);
+        setFavoriteEvents((prev) => [...prev, eventId]);
+        toast.success("Ajouté aux favoris");
+      }
+    } catch (e) {
+      toast.error("Erreur lors de la mise à jour du favori");
+    }
   };
 
   const shareEvent = async (event: Event) => {
@@ -420,9 +441,13 @@ export default function EventsListPage() {
 
               {/* Bouton créer événement */}
               <Button asChild className="hidden sm:flex">
-                <Link href={isAuthenticated ? "/events/create" : "/registration"}>
+                <Link
+                  href={isAuthenticated ? "/events/create" : "/registration"}
+                >
                   <Plus className="h-4 w-4 mr-2" />
-                  {isAuthenticated ? "Créer un événement" : "Se connecter pour créer"}
+                  {isAuthenticated
+                    ? "Créer un événement"
+                    : "Se connecter pour créer"}
                 </Link>
               </Button>
             </div>
@@ -584,7 +609,9 @@ export default function EventsListPage() {
           size="lg"
           className="h-14 w-14 rounded-full shadow-lg bg-primary hover:bg-primary/90 text-primary-foreground"
           asChild
-          title={isAuthenticated ? "Créer un événement" : "Se connecter pour créer"}
+          title={
+            isAuthenticated ? "Créer un événement" : "Se connecter pour créer"
+          }
         >
           <Link href={isAuthenticated ? "/events/create" : "/registration"}>
             <Plus className="h-6 w-6" />
