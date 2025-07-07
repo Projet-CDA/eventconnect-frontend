@@ -1,8 +1,10 @@
-// app/user/[id]/page.jsx
+// app/user/[id]/page.tsx
 "use client";
 
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
+
+
 
 interface User {
   id: string | number;

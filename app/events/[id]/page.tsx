@@ -24,6 +24,8 @@ import { format } from "date-fns";
 import { fr } from "date-fns/locale";
 import { useAuthCheck } from "@/hooks/useAuth";
 
+
+
 interface EventDetails {
   id: number;
   nom: string;
