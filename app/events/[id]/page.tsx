@@ -255,7 +255,7 @@ export default function EventDetailPage() {
         <div className="text-center">
           <LoadingSpinner />
           <p className="mt-4 text-muted-foreground">
-            Chargement de l'événement...
+            Chargement de l&apos;événement...
           </p>
         </div>
       </div>
@@ -271,7 +271,8 @@ export default function EventDetailPage() {
             Événement non trouvé
           </h1>
           <p className="text-muted-foreground mb-6">
-            L'événement que vous recherchez n'existe pas ou a été supprimé.
+            L&apos;événement que vous recherchez n&apos;existe pas ou a été
+            supprimé.
           </p>
           <Button onClick={() => router.push("/events")}>
             Retour aux événements
@@ -405,7 +406,7 @@ export default function EventDetailPage() {
                       <MessageCircle className="h-5 w-5 text-primary" />
                       Description
                     </h3>
-                    <div className="text-muted-foreground leading-relaxed">
+                    <div className="text-muted-foreground leading-relaxed break-words">
                       {showFullDescription ? (
                         <p>{event.description}</p>
                       ) : (
@@ -696,14 +697,14 @@ export default function EventDetailPage() {
                       onClick={() => router.push(`/events/${params.id}/edit`)}
                       className="w-full justify-start"
                     >
-                      Modifier l'événement
+                      Modifier l&apos;événement
                     </Button>
                     <Button
                       variant="outline"
                       onClick={handleShare}
                       className="w-full justify-start"
                     >
-                      Partager l'événement
+                      Partager l&apos;événement
                     </Button>
                     <Button
                       variant="outline"

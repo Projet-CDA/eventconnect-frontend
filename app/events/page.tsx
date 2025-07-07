@@ -910,8 +910,10 @@ export default function EventsPage() {
                       <h3 className="font-semibold text-lg mb-2">
                         Description
                       </h3>
-                      <p className="text-muted-foreground leading-relaxed">
-                        {event.description}
+                      <p className="text-muted-foreground mb-4 line-clamp-2 leading-relaxed break-words">
+                        {event.description.length > 100
+                          ? `${event.description.substring(0, 100)}...`
+                          : event.description}
                       </p>
                     </div>
 
@@ -1191,107 +1193,78 @@ export default function EventsPage() {
                   : "space-y-4"
               }
             >
-              {filteredEvents.map((event) => (
+              {filteredEvents.map((event, index) => (
                 <Card
                   key={event.id}
-                  className="group hover:shadow-lg transition-all duration-200 cursor-pointer border-0 shadow-md"
-                  onClick={() => router.push(`/events/${event.id}`)}
+                  className="overflow-hidden hover:scale-105 transition-all duration-300 border-border/50 shadow-lg bg-card/50 backdrop-blur-sm"
+                  style={{ animationDelay: `${index * 0.1}s` }}
                 >
-                  <CardHeader className="pb-3">
-                    <div className="flex items-start justify-between">
-                      <div className="flex-1">
-                        <CardTitle className="text-lg font-semibold line-clamp-2 group-hover:text-primary transition-colors">
-                          {event.title}
-                        </CardTitle>
-                        <div className="flex items-center gap-2 mt-2">
-                          <Badge variant="secondary" className="text-xs">
-                            {event.category}
-                          </Badge>
-                          <span className="text-xs text-muted-foreground">
-                            {event.price}
-                          </span>
+                  <div className="aspect-[4/3] relative overflow-hidden">
+                    {event.image_url && (
+                      <img
+                        src={event.image_url}
+                        alt={event.title}
+                        className="w-full h-full object-cover transition-transform duration-500 hover:scale-110"
+                      />
+                    )}
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+                    <div className="absolute top-4 left-4">
+                      <Badge className="bg-background/90 text-foreground border border-border/50">
+                        {event.category}
+                      </Badge>
+                    </div>
+                    <div className="absolute top-4 right-4">
+                      <Badge
+                        variant="outline"
+                        className="bg-background/90 text-foreground border-border/50"
+                      >
+                        {event.price}
+                      </Badge>
+                    </div>
+                    <div className="absolute bottom-4 left-4 right-4">
+                      <div className="text-white">
+                        <div className="flex items-center text-sm mb-1">
+                          <Calendar className="h-4 w-4 mr-2" />
+                          {formatDate(event.start_date)}
+                        </div>
+                        <div className="flex items-center text-sm">
+                          <Clock className="h-4 w-4 mr-2" />
+                          {formatTime(event.start_date)}
                         </div>
                       </div>
-                      <div className="flex gap-1">
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            toggleFavorite(event.id);
-                          }}
-                          className="h-8 w-8 p-0"
-                        >
-                          <Heart
-                            className={`h-4 w-4 ${
-                              favoriteEvents.includes(event.id)
-                                ? "fill-red-500 text-red-500"
-                                : "text-muted-foreground"
-                            }`}
-                          />
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            shareEvent(event);
-                          }}
-                          className="h-8 w-8 p-0"
-                        >
-                          <Share2 className="h-4 w-4 text-muted-foreground" />
-                        </Button>
-                      </div>
                     </div>
-                  </CardHeader>
-                  <CardContent className="pt-0">
-                    <p className="text-sm text-muted-foreground line-clamp-2 mb-4">
-                      {event.description}
+                  </div>
+                  <CardContent className="p-6">
+                    <h3 className="text-xl font-bold text-foreground mb-3 line-clamp-2">
+                      {event.title}
+                    </h3>
+                    <p className="text-muted-foreground mb-4 line-clamp-2 leading-relaxed break-words">
+                      {event.description.length > 100
+                        ? `${event.description.substring(0, 100)}...`
+                        : event.description}
                     </p>
-                    <div className="space-y-2">
-                      <div className="flex items-center gap-2 text-sm">
-                        <Calendar className="h-4 w-4 text-muted-foreground" />
-                        <span>{formatDate(event.start_date)}</span>
-                        <span className="text-muted-foreground">•</span>
-                        <Clock className="h-4 w-4 text-muted-foreground" />
-                        <span>{formatTime(event.start_date)}</span>
+                    <div className="space-y-2 text-sm text-muted-foreground mb-4">
+                      <div className="flex items-center">
+                        <MapPin className="h-4 w-4 mr-3 text-primary" />
+                        {event.location}
                       </div>
-                      <div className="flex items-center gap-2 text-sm">
-                        <MapPin className="h-4 w-4 text-muted-foreground" />
-                        <span className="line-clamp-1">{event.location}</span>
-                      </div>
-                      <div className="flex items-center gap-2 text-sm">
-                        <Users className="h-4 w-4 text-muted-foreground" />
-                        <span>
-                          {getParticipantCount(event)}
-                          {event.max_participants &&
-                            ` / ${event.max_participants}`}{" "}
-                          participants
-                        </span>
+                      <div className="flex items-center">
+                        <Users className="h-4 w-4 mr-3 text-primary" />
+                        {getParticipantCount(event)} participants
+                        {event.max_participants && (
+                          <span> / {event.max_participants}</span>
+                        )}
                       </div>
                     </div>
-                    <div className="mt-4 pt-4 border-t">
-                      {isUserParticipating(event) ? (
-                        <Badge
-                          variant="default"
-                          className="w-full justify-center"
-                        >
-                          ✓ Inscrit
-                        </Badge>
-                      ) : (
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            joinEvent(event.id);
-                          }}
-                          className="w-full"
-                        >
-                          S&apos;inscrire
-                        </Button>
-                      )}
-                    </div>
+                    <Button
+                      className="w-full bg-primary hover:bg-primary/90 text-primary-foreground transition-all duration-300"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        router.push(`/events/${event.id}`);
+                      }}
+                    >
+                      Voir les détails
+                    </Button>
                   </CardContent>
                 </Card>
               ))}
