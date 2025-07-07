@@ -14,14 +14,19 @@ export interface InscriptionData {
 }
 
 // Récupérer les inscriptions d'un événement
-export const getEventInscriptions = async (eventId: string | number): Promise<Inscription[]> => {
+export const getEventInscriptions = async (
+  eventId: string | number
+): Promise<Inscription[]> => {
   try {
-    const response = await fetch(`${API_BASE_URL}/inscriptions?evenement_id=${eventId}`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
+    const response = await fetch(
+      `${API_BASE_URL}/inscriptions?evenement_id=${eventId}`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
 
     if (!response.ok) {
       throw new Error("Erreur lors de la récupération des inscriptions");
@@ -35,14 +40,19 @@ export const getEventInscriptions = async (eventId: string | number): Promise<In
 };
 
 // Compter les inscriptions d'un événement
-export const getInscriptionCount = async (eventId: string | number): Promise<number> => {
+export const getInscriptionCount = async (
+  eventId: string | number
+): Promise<number> => {
   try {
-    const response = await fetch(`${API_BASE_URL}/inscriptions/count/${eventId}`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
+    const response = await fetch(
+      `${API_BASE_URL}/inscriptions/count/${eventId}`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
 
     if (!response.ok) {
       throw new Error("Erreur lors du comptage des inscriptions");
@@ -57,7 +67,9 @@ export const getInscriptionCount = async (eventId: string | number): Promise<num
 };
 
 // S'inscrire à un événement
-export const subscribeToEvent = async (inscriptionData: InscriptionData): Promise<Inscription> => {
+export const subscribeToEvent = async (
+  inscriptionData: InscriptionData
+): Promise<Inscription> => {
   try {
     const token = localStorage.getItem("token");
     const response = await fetch(`${API_BASE_URL}/inscriptions`, {
@@ -70,8 +82,15 @@ export const subscribeToEvent = async (inscriptionData: InscriptionData): Promis
     });
 
     if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.message || "Erreur lors de l'inscription");
+      let errorMessage = `Erreur lors de l'inscription (code ${response.status})`;
+      const responseText = await response.text();
+      try {
+        const errorData = JSON.parse(responseText);
+        errorMessage = errorData.message || errorMessage;
+      } catch (e) {
+        if (responseText) errorMessage = responseText;
+      }
+      throw new Error(errorMessage);
     }
 
     return await response.json();
@@ -82,16 +101,21 @@ export const subscribeToEvent = async (inscriptionData: InscriptionData): Promis
 };
 
 // Se désinscrire d'un événement
-export const unsubscribeFromEvent = async (inscriptionId: number): Promise<boolean> => {
+export const unsubscribeFromEvent = async (
+  inscriptionId: number
+): Promise<boolean> => {
   try {
     const token = localStorage.getItem("token");
-    const response = await fetch(`${API_BASE_URL}/inscriptions/${inscriptionId}`, {
-      method: "DELETE",
-      headers: {
-        "Content-Type": "application/json",
-        ...(token && { Authorization: `Bearer ${token}` }),
-      },
-    });
+    const response = await fetch(
+      `${API_BASE_URL}/inscriptions/${inscriptionId}`,
+      {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+          ...(token && { Authorization: `Bearer ${token}` }),
+        },
+      }
+    );
 
     if (!response.ok) {
       const errorData = await response.json();
@@ -106,16 +130,22 @@ export const unsubscribeFromEvent = async (inscriptionId: number): Promise<boole
 };
 
 // Vérifier si l'utilisateur est inscrit à un événement
-export const checkUserInscription = async (eventId: string | number, userId: number): Promise<Inscription | null> => {
+export const checkUserInscription = async (
+  eventId: string | number,
+  userId: number
+): Promise<Inscription | null> => {
   try {
     const token = localStorage.getItem("token");
-    const response = await fetch(`${API_BASE_URL}/inscriptions?evenement_id=${eventId}&utilisateur_id=${userId}`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        ...(token && { Authorization: `Bearer ${token}` }),
-      },
-    });
+    const response = await fetch(
+      `${API_BASE_URL}/inscriptions?evenement_id=${eventId}&utilisateur_id=${userId}`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          ...(token && { Authorization: `Bearer ${token}` }),
+        },
+      }
+    );
 
     if (!response.ok) {
       throw new Error("Erreur lors de la vérification de l'inscription");
@@ -127,4 +157,4 @@ export const checkUserInscription = async (eventId: string | number, userId: num
     console.error("Erreur checkUserInscription:", error);
     throw error;
   }
-}; 
+};

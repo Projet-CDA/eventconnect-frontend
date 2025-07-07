@@ -9,8 +9,6 @@ import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import {
-  Calendar,
-  Clock,
   MapPin,
   Users,
   Share2,
@@ -18,20 +16,15 @@ import {
   Euro,
   User,
   Loader2,
-  Heart,
-  Star,
   Phone,
   Mail,
   Globe,
-  MapIcon,
   CalendarDays,
-  Clock4,
   UserCheck,
   UserX,
   AlertCircle,
   CheckCircle,
   ExternalLink,
-  Copy,
   MessageCircle,
   Bookmark,
   BookmarkCheck,
@@ -40,28 +33,12 @@ import { toast } from "sonner";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
 import { getEventById } from "@/lib/services/eventService";
-import { createInscription } from "@/lib/services/inscriptionService";
-
-interface EventDetails {
-  id: number;
-  nom: string;
-  description: string;
-  categorie: string;
-  lieu: string;
-  date_et_heure: string;
-  nombre_max_participants: number | null;
-  prix: number;
-  visibilite: string;
-  statut: string;
-  createur_id: number;
-  date_creation: string;
-  date_modification: string;
-  image_url?: string;
-  contact_email?: string;
-  contact_phone?: string;
-  website?: string;
-  tags?: string[];
-}
+import {
+  subscribeToEvent,
+  checkUserInscription,
+  getEventInscriptions,
+} from "@/lib/services/inscriptionService";
+import { BackendEvent } from "@/lib/types";
 
 interface Participant {
   id: number;
@@ -76,7 +53,7 @@ export default function EventDetailPage() {
   const router = useRouter();
   const { isAuthenticated, isLoading: authLoading, user } = useAuthCheck();
 
-  const [event, setEvent] = useState<EventDetails | null>(null);
+  const [event, setEvent] = useState<BackendEvent | null>(null);
   const [loading, setLoading] = useState(true);
   const [isRegistered, setIsRegistered] = useState(false);
   const [registrationLoading, setRegistrationLoading] = useState(false);
@@ -90,6 +67,7 @@ export default function EventDetailPage() {
   useEffect(() => {
     if (params.id) {
       fetchEventDetails();
+      fetchParticipants();
       checkUserRegistration();
     }
   }, [params.id, isAuthenticated]);
@@ -99,39 +77,6 @@ export default function EventDetailPage() {
       setLoading(true);
       const data = await getEventById(params.id as string);
       setEvent(data);
-
-      // Simuler le nombre de participants (à remplacer par un vrai appel API)
-      setParticipantsCount(
-        Math.floor(Math.random() * (data.nombre_max_participants || 50)) + 1
-      );
-
-      // Simuler la liste des participants
-      const mockParticipants: Participant[] = [
-        {
-          id: 1,
-          nom: "Dupont",
-          prenom: "Marie",
-          avatar_url:
-            "https://images.unsplash.com/photo-1494790108755-2616b612b786?w=150&h=150&fit=crop&crop=face",
-          date_inscription: "2024-01-15",
-        },
-        {
-          id: 2,
-          nom: "Martin",
-          prenom: "Pierre",
-          avatar_url:
-            "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face",
-          date_inscription: "2024-01-14",
-        },
-        {
-          id: 3,
-          nom: "Bernard",
-          prenom: "Sophie",
-          date_inscription: "2024-01-13",
-        },
-      ];
-      setParticipants(mockParticipants);
-
       setLoading(false);
     } catch (error) {
       console.error("Erreur lors du chargement de l'événement:", error);
@@ -140,14 +85,38 @@ export default function EventDetailPage() {
     }
   };
 
+  const fetchParticipants = async () => {
+    try {
+      const inscriptions = await getEventInscriptions(params.id as string);
+      setParticipants(
+        inscriptions.map((insc: any) => ({
+          id: insc.utilisateur_id,
+          nom: insc.nom || "",
+          prenom: insc.prenom || "",
+          avatar_url: insc.avatar_url || undefined,
+          date_inscription: insc.date_inscription,
+        }))
+      );
+      setParticipantsCount(inscriptions.length);
+    } catch (error) {
+      setParticipants([]);
+      setParticipantsCount(0);
+    }
+  };
+
   const checkUserRegistration = async () => {
-    if (!isAuthenticated) return;
+    if (!isAuthenticated || !user) return;
 
     try {
-      // Simuler la vérification d'inscription
-      setIsRegistered(Math.random() > 0.7);
+      const inscription = await checkUserInscription(
+        params.id as string,
+        user.id
+      );
+      setIsRegistered(!!inscription);
     } catch (error) {
       console.error("Erreur lors de la vérification de l'inscription:", error);
+      // Fallback: simuler la vérification d'inscription
+      setIsRegistered(Math.random() > 0.7);
     }
   };
 
@@ -158,16 +127,15 @@ export default function EventDetailPage() {
       return;
     }
 
-    if (!event) return;
+    if (!event || !user) return;
 
     try {
       setRegistrationLoading(true);
 
       // Appel API pour s'inscrire
-      await createInscription({
-        event_id: event.id,
-        user_id: user?.id || 0,
-        statut: "confirmé",
+      await subscribeToEvent({
+        evenement_id: event.id,
+        utilisateur_id: user.id,
       });
 
       setIsRegistered(true);
@@ -215,10 +183,6 @@ export default function EventDetailPage() {
 
   const formatDate = (dateString: string) => {
     return format(new Date(dateString), "dd MMMM yyyy", { locale: fr });
-  };
-
-  const formatTime = (dateString: string) => {
-    return format(new Date(dateString), "HH:mm", { locale: fr });
   };
 
   const formatDateTime = (dateString: string) => {
@@ -474,64 +438,13 @@ export default function EventDetailPage() {
                       <div>
                         <p className="font-medium">Prix</p>
                         <p className="text-muted-foreground">
-                          {event.prix > 0 ? `${event.prix}€` : "Gratuit"}
+                          {event.prix && event.prix > 0
+                            ? `${event.prix}€`
+                            : "Gratuit"}
                         </p>
                       </div>
                     </div>
                   </div>
-
-                  {/* Informations de contact */}
-                  {(event.contact_email ||
-                    event.contact_phone ||
-                    event.website) && (
-                    <>
-                      <Separator />
-                      <div>
-                        <h3 className="font-semibold text-lg mb-3 flex items-center gap-2">
-                          <User className="h-5 w-5 text-primary" />
-                          Contact
-                        </h3>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                          {event.contact_email && (
-                            <div className="flex items-center gap-3">
-                              <Mail className="h-4 w-4 text-muted-foreground" />
-                              <a
-                                href={`mailto:${event.contact_email}`}
-                                className="text-primary hover:underline"
-                              >
-                                {event.contact_email}
-                              </a>
-                            </div>
-                          )}
-                          {event.contact_phone && (
-                            <div className="flex items-center gap-3">
-                              <Phone className="h-4 w-4 text-muted-foreground" />
-                              <a
-                                href={`tel:${event.contact_phone}`}
-                                className="text-primary hover:underline"
-                              >
-                                {event.contact_phone}
-                              </a>
-                            </div>
-                          )}
-                          {event.website && (
-                            <div className="flex items-center gap-3">
-                              <Globe className="h-4 w-4 text-muted-foreground" />
-                              <a
-                                href={event.website}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="text-primary hover:underline flex items-center gap-1"
-                              >
-                                Site web
-                                <ExternalLink className="h-3 w-3" />
-                              </a>
-                            </div>
-                          )}
-                        </div>
-                      </div>
-                    </>
-                  )}
 
                   {/* Participants */}
                   {participants.length > 0 && (
@@ -670,18 +583,6 @@ export default function EventDetailPage() {
                       <span className="font-medium">
                         {formatDate(event.date_creation)}
                       </span>
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <span className="text-muted-foreground">
-                        Dernière modification
-                      </span>
-                      <span className="font-medium">
-                        {formatDate(event.date_modification)}
-                      </span>
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <span className="text-muted-foreground">Visibilité</span>
-                      <Badge variant="outline">{event.visibilite}</Badge>
                     </div>
                   </CardContent>
                 </Card>
