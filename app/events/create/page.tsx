@@ -223,14 +223,17 @@ export default function CreateEventPage() {
         return;
       }
 
-      const response = await fetch("http://localhost:3000/api/evenements", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify(eventData),
-      });
+      const response = await fetch(
+        "https://eventconnectes-backend.pphilibert-web.eu/api/evenements",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify(eventData),
+        }
+      );
 
       if (!response.ok) {
         throw new Error("Erreur lors de la création de l'événement");

@@ -197,17 +197,20 @@ export default function RegistrationPage() {
 
     try {
       // Inscription via l'API backend
-      const registerResponse = await fetch("http://localhost:3000/api/utilisateurs/register", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          nom: `${formData.firstName} ${formData.lastName}`,
-          email: formData.email,
-          mot_de_passe: formData.password,
-        }),
-      });
+      const registerResponse = await fetch(
+        "https://eventconnectes-backend.pphilibert-web.eu/api/utilisateurs/register",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            nom: `${formData.firstName} ${formData.lastName}`,
+            email: formData.email,
+            mot_de_passe: formData.password,
+          }),
+        }
+      );
 
       const registerData = await registerResponse.json();
 
@@ -218,16 +221,19 @@ export default function RegistrationPage() {
       toast.success("Inscription réussie ! Connexion automatique...");
 
       // Connexion automatique après inscription
-      const loginResponse = await fetch("http://localhost:3000/api/utilisateurs/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          email: formData.email,
-          mot_de_passe: formData.password,
-        }),
-      });
+      const loginResponse = await fetch(
+        "https://eventconnectes-backend.pphilibert-web.eu/api/utilisateurs/login",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            email: formData.email,
+            mot_de_passe: formData.password,
+          }),
+        }
+      );
 
       const loginData = await loginResponse.json();
 
@@ -249,7 +255,9 @@ export default function RegistrationPage() {
       // router.push('/dashboard');
     } catch (error: any) {
       console.error("Erreur lors de l'inscription:", error);
-      toast.error(error.message || "Erreur lors de l'inscription. Veuillez réessayer.");
+      toast.error(
+        error.message || "Erreur lors de l'inscription. Veuillez réessayer."
+      );
     } finally {
       setLoading(false);
     }

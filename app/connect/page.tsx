@@ -68,16 +68,19 @@ export default function ConnectPage() {
 
     try {
       // Connexion à l'API backend
-      const response = await fetch("http://localhost:3000/api/utilisateurs/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          email: email,
-          mot_de_passe: password,
-        }),
-      });
+      const response = await fetch(
+        "https://eventconnectes-backend.pphilibert-web.eu/api/utilisateurs/login",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            email: email,
+            mot_de_passe: password,
+          }),
+        }
+      );
 
       const data = await response.json();
 
@@ -99,7 +102,9 @@ export default function ConnectPage() {
       router.push("/events");
     } catch (error: any) {
       console.error("Erreur de connexion:", error);
-      toast.error(error.message || "Erreur de connexion. Vérifiez vos identifiants.");
+      toast.error(
+        error.message || "Erreur de connexion. Vérifiez vos identifiants."
+      );
     } finally {
       setLoading(false);
     }

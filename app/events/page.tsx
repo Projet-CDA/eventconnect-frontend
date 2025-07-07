@@ -128,7 +128,9 @@ export default function EventsListPage() {
   const fetchEvents = async () => {
     try {
       setLoading(true);
-      const response = await fetch("http://localhost:3000/api/evenements");
+      const response = await fetch(
+        "https://eventconnectes-backend.pphilibert-web.eu/api/evenements"
+      );
       const data = await response.json();
       if (Array.isArray(data)) {
         setEvents(data.map(mapBackendEvent));

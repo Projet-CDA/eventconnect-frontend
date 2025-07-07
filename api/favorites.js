@@ -1,8 +1,10 @@
-const API_URL = "http://localhost:3000/api/favoris";
+const API_URL =
+  process.env.NEXT_PUBLIC_API_URL ||
+  "https://eventconnectes-backend.pphilibert-web.eu/api";
 
 export async function getFavorites() {
   const token = localStorage.getItem("token");
-  const res = await fetch(API_URL, {
+  const res = await fetch(`${API_URL}/favoris`, {
     headers: { Authorization: `Bearer ${token}` },
     credentials: "include",
   });
@@ -12,7 +14,7 @@ export async function getFavorites() {
 
 export async function addFavorite(evenement_id) {
   const token = localStorage.getItem("token");
-  const res = await fetch(API_URL, {
+  const res = await fetch(`${API_URL}/favoris`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -27,7 +29,7 @@ export async function addFavorite(evenement_id) {
 
 export async function removeFavorite(favori_id) {
   const token = localStorage.getItem("token");
-  const res = await fetch(`${API_URL}/${favori_id}`, {
+  const res = await fetch(`${API_URL}/favoris/${favori_id}`, {
     method: "DELETE",
     headers: { Authorization: `Bearer ${token}` },
     credentials: "include",
