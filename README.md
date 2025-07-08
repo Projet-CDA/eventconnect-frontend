@@ -17,6 +17,7 @@ Formation : **Concepteur Développeur d’Applications (CDA)**
 - [🎨 Frontend](#-frontend)
 - [☁️ Hébergement](#-hébergement)
 - [🧪 Qualité du code](#-qualité-du-code)
+- [🧪 Tests unitaires](#-Tests-unitaires)
 - [📄 Documentation](#-documentation)
 
 ---
