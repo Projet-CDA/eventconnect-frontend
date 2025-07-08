@@ -95,6 +95,23 @@ Formation : **Concepteur Développeur d’Applications (CDA)**
 
 ---
 
+## 🧪 Tests unitaires
+
+- **Frameworks utilisés** : Mocha, Chai, Sinon, Supertest
+- **Couverture** :
+  - Tests unitaires sur tous les contrôleurs, modèles et middlewares du backend
+  - Tests d’intégration sur les routes principales de l’API
+- **Structure** :
+  - Tous les tests sont situés dans le dossier `/test`
+  - Les tests sont écrits en JavaScript (ESM)
+- **Lancement des tests** :
+  ```bash
+  npm test
+  ```
+- **Objectif** :
+  - Garantir la fiabilité des fonctionnalités critiques (authentification, gestion des événements, paiements, etc.)
+  - Faciliter la maintenance et l’évolution du projet 
+
 ## 📄 Documentation
 
 - **Choix techniques** :
