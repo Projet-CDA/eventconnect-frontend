@@ -602,22 +602,6 @@ export default function EventsListPage() {
           )}
         </div>
       </div>
-
-      {/* Bouton flottant pour créer un événement - Mobile */}
-      <div className="sm:hidden fixed bottom-6 right-4 z-40">
-        <Button
-          size="lg"
-          className="h-14 w-14 rounded-full shadow-lg bg-primary hover:bg-primary/90 text-primary-foreground"
-          asChild
-          title={
-            isAuthenticated ? "Créer un événement" : "Se connecter pour créer"
-          }
-        >
-          <Link href={isAuthenticated ? "/events/create" : "/registration"}>
-            <Plus className="h-6 w-6" />
-          </Link>
-        </Button>
-      </div>
     </div>
   );
 }
