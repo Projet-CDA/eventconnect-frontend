@@ -40,6 +40,7 @@ interface EventDetails {
   createur_id: number;
   date_creation: string;
   date_modification: string;
+  image_url?: string; 
 }
 
 export default function EventDetailPage() {
@@ -433,7 +434,7 @@ export default function EventDetailPage() {
   const isEventFull =
     event?.nombre_max_participants &&
     participantsCount >= event.nombre_max_participants;
-  const eventImage =
+  const eventImage = event?.image_url ||
     "https://images.unsplash.com/photo-1540575467063-178a50c2df87?q=80&w=1740&auto=format&fit=crop";
 
   if (loading) {
