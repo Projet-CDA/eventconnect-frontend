@@ -585,7 +585,7 @@ export default function EventsListPage() {
                           <ArrowRight className="h-3 w-3" />
                         </Link>
                       </Button>
-                      <Button
+{/*                       <Button
                         variant="outline"
                         size="sm"
                         className="px-3"
@@ -593,7 +593,7 @@ export default function EventsListPage() {
                         disabled={isUserParticipating(event)}
                       >
                         {isUserParticipating(event) ? "✓" : "+"}
-                      </Button>
+                      </Button> */}
                     </div>
                   </CardContent>
                 </Card>
