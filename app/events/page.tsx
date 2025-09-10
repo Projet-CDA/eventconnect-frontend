@@ -565,11 +565,11 @@ export default function EventsListPage() {
                         {getParticipantCount(event)}/{event.max_participants}{" "}
                         participants
                       </div>
-                      <div className="flex items-center text-xs sm:text-sm text-muted-foreground">
+{/*                       <div className="flex items-center text-xs sm:text-sm text-muted-foreground">
                         <User className="h-3 w-3 sm:h-4 sm:w-4 mr-2 text-primary" />
                         Par {event.user_profiles.first_name}{" "}
                         {event.user_profiles.last_name}
-                      </div>
+                      </div> */}
                     </div>
 
                     <div className="flex gap-2">
