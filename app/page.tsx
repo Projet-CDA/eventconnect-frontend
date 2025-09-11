@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -26,54 +27,91 @@ import {
   Globe,
 } from "lucide-react";
 
+interface Event {
+  id: string;
+  title: string;
+  description: string;
+  start_date: string;
+  location: string;
+  max_participants: number | null;
+  image_url: string | null;
+  category: string;
+  price: string;
+}
+
 export default function Home() {
-  const featuredEvents = [
-    {
-      id: 1,
-      title: "Tech Meetup Paris",
-      description:
-        "Rencontrez des professionnels du secteur tech et découvrez les dernières technologies.",
-      date: "2024-03-15",
-      time: "19:00",
-      location: "La Station F, Paris",
-      participants: 150,
-      maxParticipants: 200,
-      image:
-        "https://images.pexels.com/photos/2774556/pexels-photo-2774556.jpeg?auto=compress&cs=tinysrgb&w=800",
-      category: "Tech",
-      price: "Gratuit",
-    },
-    {
-      id: 2,
-      title: "Festival de musique électronique",
-      description:
-        "Une soirée de musique live, des créations DJ et de la danse électronique.",
-      date: "2024-03-20",
-      time: "20:00",
-      location: "Parc de la Villette, Paris",
-      participants: 500,
-      maxParticipants: 800,
-      image:
-        "https://images.pexels.com/photos/1763075/pexels-photo-1763075.jpeg?auto=compress&cs=tinysrgb&w=800",
-      category: "Musique",
-      price: "25€",
-    },
-    {
-      id: 3,
-      title: "Atelier cuisine italienne",
-      description:
-        "Apprenez à préparer des plats italiens authentiques avec un chef professionnel.",
-      date: "2024-03-25",
-      time: "14:00",
-      location: "École de cuisine, Lyon",
-      participants: 12,
-      maxParticipants: 15,
-      image:
-        "https://images.pexels.com/photos/3184306/pexels-photo-3184306.jpeg?auto=compress&cs=tinysrgb&w=800",
-      category: "Cuisine",
-      price: "45€",
-    },
-  ];
+  const [events, setEvents] = useState<Event[]>([]);
+  // const featuredEvents = [
+  //   {
+  //     id: 1,
+  //     title: "Tech Meetup Paris",
+  //     description:
+  //       "Rencontrez des professionnels du secteur tech et découvrez les dernières technologies.",
+  //     date: "2024-03-15",
+  //     time: "19:00",
+  //     location: "La Station F, Paris",
+  //     participants: 150,
+  //     maxParticipants: 200,
+  //     image:
+  //       "https://images.pexels.com/photos/2774556/pexels-photo-2774556.jpeg?auto=compress&cs=tinysrgb&w=800",
+  //     category: "Tech",
+  //     price: "Gratuit",
+  //   },
+  //   {
+  //     id: 2,
+  //     title: "Festival de musique électronique",
+  //     description:
+  //       "Une soirée de musique live, des créations DJ et de la danse électronique.",
+  //     date: "2024-03-20",
+  //     time: "20:00",
+  //     location: "Parc de la Villette, Paris",
+  //     participants: 500,
+  //     maxParticipants: 800,
+  //     image:
+  //       "https://images.pexels.com/photos/1763075/pexels-photo-1763075.jpeg?auto=compress&cs=tinysrgb&w=800",
+  //     category: "Musique",
+  //     price: "25€",
+  //   },
+  //   {
+  //     id: 3,
+  //     title: "Atelier cuisine italienne",
+  //     description:
+  //       "Apprenez à préparer des plats italiens authentiques avec un chef professionnel.",
+  //     date: "2024-03-25",
+  //     time: "14:00",
+  //     location: "École de cuisine, Lyon",
+  //     participants: 12,
+  //     maxParticipants: 15,
+  //     image:
+  //       "https://images.pexels.com/photos/3184306/pexels-photo-3184306.jpeg?auto=compress&cs=tinysrgb&w=800",
+  //     category: "Cuisine",
+  //     price: "45€",
+  //   },
+  // ];
+
+   useEffect(() => {
+    fetch("https://eventconnectes-backend.pphilibert-web.eu/api/evenements")
+      .then((res) => res.json())
+      .then((data) => {
+        if (Array.isArray(data)) {
+          setEvents(
+            data
+              .slice(0, 3) // ⬅️ seulement les 3 premiers
+              .map((e: any) => ({
+                id: e.id?.toString() ?? "",
+                title: e.nom ?? "",
+                description: e.description ?? "",
+                start_date: e.date_et_heure ?? "",
+                location: e.lieu ?? "",
+                max_participants: e.nombre_max_participants ?? null,
+                image_url: e.image_url ?? null,
+                category: e.categorie ?? "",
+                price: e.prix !== undefined ? `${e.prix}€` : "Gratuit",
+              }))
+          );
+        }
+      });
+  }, []);
 
   const features = [
     {
@@ -269,7 +307,7 @@ export default function Home() {
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+{/*           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {featuredEvents.map((event, index) => (
               <Card
                 key={event.id}
@@ -339,6 +377,52 @@ export default function Home() {
                     asChild
                   >
                     <Link href={`/`}>Voir les détails</Link>
+                  </Button>
+                </CardContent>
+              </Card>
+            ))}
+          </div> */}
+           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {events.map((event) => (
+              <Card key={event.id} className="overflow-hidden">
+                <div className="aspect-[4/3] relative">
+                  <img
+                    src={event.image_url || "/placeholder.jpg"}
+                    alt={event.title}
+                    className="w-full h-full object-cover"
+                  />
+                  <div className="absolute top-4 left-4">
+                    <Badge>{event.category}</Badge>
+                  </div>
+                </div>
+                <CardContent className="p-6">
+                  <h3 className="text-xl font-bold mb-3">{event.title}</h3>
+                  <p className="text-muted-foreground mb-4 line-clamp-2">
+                    {event.description}
+                  </p>
+                  <div className="space-y-2 text-sm text-muted-foreground mb-4">
+                    <div className="flex items-center">
+                      <Calendar className="h-4 w-4 mr-2" />
+                      {new Date(event.start_date).toLocaleDateString("fr-FR")}
+                    </div>
+                    <div className="flex items-center">
+                      <Clock className="h-4 w-4 mr-2" />
+                      {new Date(event.start_date).toLocaleTimeString("fr-FR", {
+                        hour: "2-digit",
+                        minute: "2-digit",
+                      })}
+                    </div>
+                    <div className="flex items-center">
+                      <MapPin className="h-4 w-4 mr-2" />
+                      {event.location}
+                    </div>
+                    <div className="flex items-center">
+                      <Users className="h-4 w-4 mr-2" />
+                      {event.max_participants ?? "∞"} participants max
+                    </div>
+                  </div>
+                  <Button asChild className="w-full">
+                    <Link href={`/events/${event.id}`}>Voir les détails</Link>
                   </Button>
                 </CardContent>
               </Card>
