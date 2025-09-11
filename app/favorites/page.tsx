@@ -121,49 +121,58 @@ export default function FavoritesPage() {
   }, [searchTerm, favorites, selectedCategory, sortBy]);
 
   const fetchFavorites = async () => {
-    try {
-      setLoading(true);
-      const token = localStorage.getItem("token");
-      const userData = localStorage.getItem("user");
-      const user = userData ? JSON.parse(userData) : null;
+  try {
+    setLoading(true);
+    const token = localStorage.getItem("token");
+    const userData = localStorage.getItem("user");
+    const user = userData ? JSON.parse(userData) : null;
 
-      if (!user?.id) {
-        throw new Error("Utilisateur non connecté");
+    if (!user?.id) {
+      throw new Error("Utilisateur non connecté");
+    }
+
+    // Récupérer les favoris (juste les IDs)
+    const response = await fetch(
+      `https://eventconnectes-backend.pphilibert-web.eu/api/favoris/utilisateur/${user.id}`,
+      {
+        headers: {
+          "Authorization": `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
       }
+    );
 
-      // Récupérer les favoris depuis l'API
-      const response = await fetch(
-        `https://eventconnectes-backend.pphilibert-web.eu/api/favoris/utilisateur/${user.id}`,
-        {
-          headers: {
-            "Authorization": `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        }
+    if (!response.ok) {
+      throw new Error("Erreur lors de la récupération des favoris");
+    }
+
+    const favoritesData = await response.json();
+
+    // Aller chercher chaque événement lié
+    const mappedFavorites: FavoriteEvent[] = await Promise.all(
+      favoritesData.map(async (fav: any) => {
+        const eventRes = await fetch(
+          `https://eventconnectes-backend.pphilibert-web.eu/api/evenements/${fav.evenement_id}`
+        );
+          const eventData = await eventRes.json();
+  
+          return {
+            id: eventData.id?.toString() || "",
+            title: eventData.nom || "",
+            description: eventData.description || "",
+            start_date: eventData.date_et_heure || "",
+            location: eventData.lieu || "",
+            category: eventData.categorie || "",
+            price: eventData.prix ? `${eventData.prix}€` : "Gratuit",
+            max_participants: eventData.nombre_max_participants || 0,
+            current_participants: 0,
+            organizer: eventData.createur?.nom || "Organisateur",
+            dateAdded: fav.date_ajout || "",
+            image_url: eventData.image_url || "",
+          };
+        })
       );
-
-      if (!response.ok) {
-        throw new Error("Erreur lors de la récupération des favoris");
-      }
-
-      const favoritesData = await response.json();
-      
-      // Mapper les données pour correspondre à l'interface FavoriteEvent
-      const mappedFavorites: FavoriteEvent[] = favoritesData.map((fav: any) => ({
-        id: fav.evenement?.id?.toString() || fav.evenement_id?.toString() || "",
-        title: fav.evenement?.nom || "",
-        description: fav.evenement?.description || "",
-        start_date: fav.evenement?.date_et_heure || "",
-        location: fav.evenement?.lieu || "",
-        category: fav.evenement?.categorie || "",
-        price: fav.evenement?.prix ? `${fav.evenement.prix}€` : "Gratuit",
-        max_participants: fav.evenement?.nombre_max_participants || 0,
-        current_participants: 0, // À calculer depuis les inscriptions si nécessaire
-        organizer: fav.evenement?.createur?.nom || "Organisateur",
-        dateAdded: fav.date_ajout || "",
-        image_url: fav.evenement?.image_url || "",
-      }));
-
+  
       setFavorites(mappedFavorites);
     } catch (error) {
       console.error("Erreur lors de la récupération des favoris:", error);
