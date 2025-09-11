@@ -161,7 +161,7 @@ export function Navbar() {
             {/* Logo mobile optimisé */}
             <div className="flex items-center">
               <Link
-                href="/"
+                href="/admin"
                 className="flex items-center space-x-2 sm:space-x-3 group"
                 onClick={closeMobileMenu}
               >
