@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
+import { addFavorite, removeFavorite, getFavorites } from "@/api/favorites";
 import {
   ArrowLeft,
   Calendar,
@@ -56,6 +57,7 @@ export default function EventDetailPage() {
   const [counterAnimation, setCounterAnimation] = useState("");
   const [buttonAnimation, setButtonAnimation] = useState("");
   const [isSyncing, setIsSyncing] = useState(false);
+  const [isFavorite, setIsFavorite] = useState(false);
 
   // Animation pour le compteur de participants
   const animateCounter = (increase: boolean) => {
@@ -159,6 +161,47 @@ export default function EventDetailPage() {
       toast.error("Impossible de charger l'événement");
     } finally {
       setLoading(false);
+    }
+  };
+
+   // Charger si l’événement est déjà en favori
+  useEffect(() => {
+    if (isAuthenticated && params.id) {
+      getFavorites().then((favs) => {
+        const found = favs.some(
+          (f: any) => f.evenement_id?.toString() === params.id.toString()
+        );
+        setIsFavorite(found);
+      });
+    }
+  }, [isAuthenticated, params.id]);
+
+  const toggleFavorite = async () => {
+    if (!isAuthenticated) {
+      toast.error("Vous devez être connecté pour ajouter aux favoris");
+      return;
+    }
+
+    try {
+      if (isFavorite) {
+        // retirer
+        const favs = await getFavorites();
+        const currentFav = favs.find(
+          (f: any) => f.evenement_id?.toString() === params.id.toString()
+        );
+        if (currentFav) {
+          await removeFavorite(currentFav.id);
+          setIsFavorite(false);
+          toast.success("Retiré des favoris");
+        }
+      } else {
+        // ajouter
+        await addFavorite(params.id as string);
+        setIsFavorite(true);
+        toast.success("Ajouté aux favoris");
+      }
+    } catch (e) {
+      toast.error("Erreur lors de la mise à jour du favori");
     }
   };
 
@@ -563,8 +606,13 @@ export default function EventDetailPage() {
               variant="ghost"
               size="icon"
               className="bg-white/80 hover:bg-white text-gray-700"
+              onClick={toggleFavorite}
             >
-              <Heart className="h-4 w-4" />
+              <Heart
+                className={`h-4 w-4 ${
+                  isFavorite ? "fill-red-500 text-red-500" : "text-gray-700"
+                }`}
+              />
             </Button>
           </div>
         </div>
